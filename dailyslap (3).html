@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>DAILYSLAP</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a0500'/><text y='80' font-size='70' x='50' text-anchor='middle'>🌍</text></svg>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DailySlap">
+<link rel="apple-touch-icon" href="icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg1: #ffffff; --bg2: #f7f7f5; --bg3: #f1f1ef;
+  --glass: rgba(0,0,0,0.03);
+  --glass-border: rgba(0,0,0,0.08);
+  --glass-hover: rgba(0,0,0,0.05);
+  --text: #1a1a1a; --muted: rgba(0,0,0,0.4);
+  --accent: #2ecc71; --accent2: #27ae60;
+  --green: #2ecc71; --pink: #e74c3c;
+  --orange: #e67e22; --yellow: #f39c12; --red: #e74c3c;
+  --blur: blur(0px); --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 8px;
+}
+body.dark {
+  --bg1: #191919; --bg2: #1f1f1f; --bg3: #252525;
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-hover: rgba(255,255,255,0.06);
+  --text: #e8e8e8; --muted: rgba(255,255,255,0.4);
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  background: var(--bg1);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh; overflow-x: hidden;
+}
+
+/* No orbs - Notion is clean */
+.orbs { display:none; }
+@keyframes orbFloat { 0%{} 100%{} }
+
+/* Container */
+.container { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:16px 14px 100px; }
+
+/* Glass */
+.glass {
+  background: var(--bg1);
+  border: 1px solid var(--glass-border); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Splash */
+.splash {
+  position:fixed; inset:0; z-index:999;
+  background: var(--bg1);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 24px; transition:opacity 0.6s ease, transform 0.6s ease;
+}
+body.dark .splash { background: #191919; }
+.splash.hide { opacity:0; transform:scale(1.05); pointer-events:none; }
+.splash-logo { font-size:4rem; margin-bottom:16px; animation:splashPulse 2s ease-in-out infinite; }
+@keyframes splashPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.splash h1 { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; background:#1a1a1a; -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:6px; text-align:center; }
+.splash-sub { font-size:0.78rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:32px; }
+.splash-form { width:100%; max-width:360px; }
+.splash-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; color:var(--muted); font-weight:600; margin-bottom:8px; display:block; }
+.splash-input { width:100%; background:var(--bg2); border:1px solid rgba(255,140,30,0.25); border-radius:14px; padding:13px 16px; color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:1rem; outline:none; margin-bottom:12px; text-align:center; }
+.splash-input:focus { border-color:var(--accent); }
+.splash-input::placeholder { color:var(--muted); }
+.splash-btn { width:100%; background:#1a1a1a; color:#fff; border:none; border-radius:14px; padding:14px; font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; cursor:pointer; box-shadow:none; margin-top:4px; }
+.splash-note { font-size:0.7rem; color:var(--muted); margin-top:12px; text-align:center; }
+
+/* Header */
+.header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; margin-bottom:12px; border-radius:var(--radius); background:var(--bg2); border:1px solid var(--glass-border); backdrop-filter:var(--blur); }
+.header h1 { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; background:#1a1a1a; -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+body.dark .header h1 { background:none; -webkit-text-fill-color:#f5f5f5; border:1.5px solid var(--accent); border-radius:6px; padding:2px 8px; }
+.header-left { display:flex; flex-direction:column; gap:3px; }
+.header-right { display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+.user-row { display:flex; align-items:center; gap:5px; }
+#user-lakap { font-size:0.68rem; color:var(--muted); letter-spacing:1px; font-weight:700; opacity:0.9; }
+.live-clock .time { font-size:1.3rem; font-weight:700; font-family:'Syne',sans-serif; color:var(--accent2); }
+.live-clock .day-name { font-size:0.65rem; color:var(--muted); text-align:right; }
+.date { font-size:0.65rem; color:var(--muted); }
+.header-actions { display:flex; gap:6px; align-items:center; }
+.icon-sm-btn { background:var(--glass); border:1px solid var(--glass-border); border-radius:8px; padding:4px 8px; font-size:0.7rem; cursor:pointer; color:var(--muted); }
+.icon-sm-btn:hover { color:var(--text); }
+.share-copied { font-size:0.65rem; color:var(--green); font-weight:700; opacity:0; transition:opacity 0.3s; }
+.share-copied.show { opacity:1; }
+
+/* Bottom Nav */
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:100; display:flex; background:rgba(255,255,255,0.95); backdrop-filter:var(--blur); border-top:1px solid var(--glass-border); padding:8px 4px 12px; max-width:480px; margin:0 auto; }
+body.dark .bottom-nav { background:rgba(25,25,25,0.95); }
+.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; cursor:pointer; padding:6px 2px; border-radius:12px; transition:all 0.2s; color:var(--muted); }
+.nav-btn.active { color:var(--accent); }
+.nav-btn .nav-icon { font-size:1.3rem; }
+.nav-btn .nav-lbl { font-size:0.58rem; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+.nav-btn.active .nav-lbl { color:var(--accent); }
+
+/* Tab panels */
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* Progress card */
+.prog-card { padding:16px; margin-bottom:10px; }
+.prog-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.prog-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); }
+.prog-pct { font-size:0.8rem; font-weight:700; color:var(--accent); }
+.prog-track { height:8px; background:rgba(212,175,55,0.1); border-radius:99px; overflow:hidden; }
+.prog-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:99px; transition:width 0.5s; }
+.prog-stats { display:flex; gap:0; margin-top:12px; }
+.stat { flex:1; text-align:center; }
+.stat-val { display:block; font-size:1.2rem; font-weight:800; font-family:'Syne',sans-serif; }
+.stat-lbl { font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+/* Streak banner */
+.streak-banner { padding:12px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px; background:var(--bg2); }
+.streak-fire { font-size:2rem; }
+.streak-info { flex:1; }
+.streak-num { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; color:var(--accent2); line-height:1; }
+.streak-lbl { font-size:0.68rem; color:var(--muted); margin-top:2px; }
+.streak-best { font-size:0.68rem; color:var(--muted); text-align:right; }
+
+/* Pomodoro */
+.pomo-card { padding:16px; margin-bottom:10px; text-align:center; }
+.pomo-title { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:12px; }
+.pomo-ring { position:relative; width:120px; height:120px; margin:0 auto 14px; }
+.pomo-ring svg { transform:rotate(-90deg); }
+.pomo-ring-bg { fill:none; stroke:rgba(255,140,50,0.15); stroke-width:8; }
+.pomo-ring-fill { fill:none; stroke:url(#pomoGrad); stroke-width:8; stroke-linecap:round; stroke-dasharray:283; transition:stroke-dashoffset 1s linear; }
+.pomo-time { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.pomo-time-num { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--text); line-height:1; white-space:nowrap; }
+.pomo-time-lbl { font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+.pomo-btns { display:flex; gap:8px; justify-content:center; }
+.pomo-btn { background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; padding:8px 16px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; color:var(--text); transition:all 0.2s; }
+.pomo-btn.start { background:#1a1a1a; color:#fff; border:none; box-shadow:none; }
+.pomo-session { font-size:0.68rem; color:var(--muted); margin-top:10px; }
+
+/* Namaz */
+.hadis-card { padding:14px 16px; margin-bottom:10px; border-left:3px solid var(--accent); }
+.hadis-num { font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--accent); margin-bottom:6px; }
+.hadis-text { font-size:0.85rem; line-height:1.6; color:var(--text); font-style:italic; }
+.namaz-wrap { padding:12px 14px; margin-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.namaz-label { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); white-space:nowrap; }
+.namaz-cards { display:flex; gap:5px; flex-wrap:wrap; flex:1; }
+.namaz-card { background:var(--glass); border:1px solid var(--glass-border); border-radius:10px; padding:6px 8px; text-align:center; cursor:pointer; transition:all 0.2s; min-width:52px; }
+.namaz-card.next { border-color:var(--accent); background:rgba(46,204,113,0.08); }
+.namaz-card.n-done { background:rgba(74,222,128,0.1); border-color:rgba(74,222,128,0.35); }
+.namaz-card.active { background:linear-gradient(135deg,rgba(255,69,0,0.3),rgba(255,140,0,0.3)); border-color:var(--accent2); }
+.n-name { font-size:0.62rem; font-weight:700; }
+.n-time { font-size:0.68rem; color:var(--accent2); font-weight:600; margin-top:1px; }
+.n-cd { font-size:0.58rem; color:var(--muted); margin-top:1px; }
+
+/* Current activity */
+.cur-card { padding:14px 16px; margin-bottom:10px; background:var(--bg1); border-left:3px solid var(--accent); }
+.cur-label { font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:6px; }
+.cur-name { font-size:1rem; font-weight:700; margin-bottom:4px; }
+.cur-left { font-size:0.72rem; color:var(--muted); margin-bottom:10px; }
+.cur-btn { background:#1a1a1a; color:#fff; border:none; border-radius:10px; padding:8px 18px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; }
+.cur-btn.done { background:rgba(74,222,128,0.2); color:var(--green); border:1px solid rgba(74,222,128,0.3); }
+
+/* Schedule list */
+.sched-header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px 8px; }
+.add-btn { background:#1a1a1a; color:#fff; border:none; border-radius:10px; padding:7px 14px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.75rem; cursor:pointer; }
+.sched-item { display:flex; align-items:center; gap:8px; padding:10px 14px; border-bottom:1px solid rgba(255,140,50,0.08); transition:background 0.2s; }
+.sched-item:last-child { border-bottom:none; }
+.sched-item.cur-row { background:var(--bg2); border-left:3px solid var(--accent); }
+.sched-item.done-row { opacity:0.45; }
+.sched-item.past-row { opacity:0.55; }
+.item-time { font-size:0.72rem; color:var(--accent2); font-weight:700; min-width:38px; }
+.item-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.item-name { flex:1; font-size:0.85rem; font-weight:500; }
+.item-tag { font-size:0.58rem; font-weight:700; padding:2px 7px; border-radius:99px; text-transform:uppercase; letter-spacing:0.5px; }
+.c-ders { background:rgba(56,189,248,0.18); color:#38bdf8; }
+.c-namaz { background:rgba(167,139,250,0.18); color:#a78bfa; }
+.c-spor { background:rgba(74,222,128,0.18); color:#4ade80; }
+.c-muzik { background:rgba(251,191,36,0.18); color:#fbbf24; }
+.c-ibadet { background:rgba(244,114,182,0.18); color:#f472b6; }
+.c-yemek { background:rgba(251,146,60,0.18); color:#fb923c; }
+.c-uyku { background:rgba(148,163,184,0.18); color:#94a3b8; }
+.c-diger { background:rgba(255,255,255,0.1); color:var(--muted); }
+.d-ders{background:#38bdf8} .d-namaz{background:#a78bfa} .d-spor{background:#4ade80}
+.d-muzik{background:#fbbf24} .d-ibadet{background:#f472b6} .d-yemek{background:#fb923c}
+.d-uyku{background:#94a3b8} .d-diger{background:rgba(255,255,255,0.3)}
+.item-acts { display:flex; gap:4px; }
+.icon-btn { background:none; border:none; cursor:pointer; font-size:0.85rem; padding:3px; opacity:0.6; }
+.icon-btn:hover { opacity:1; }
+.icon-btn.del:hover { color:var(--red); }
+.chk-btn { width:22px; height:22px; border-radius:6px; border:1.5px solid var(--glass-border); background:none; cursor:pointer; font-size:0.75rem; display:flex; align-items:center; justify-content:center; color:var(--green); transition:all 0.2s; }
+.chk-btn.checked { background:rgba(74,222,128,0.2); border-color:var(--green); }
+
+/* Quran */
+.q-card { padding:18px; margin-bottom:10px; }
+.q-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; margin-bottom:14px; }
+.q-page-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.q-page-num { font-family:'Syne',sans-serif; font-size:2.5rem; font-weight:800; color:var(--accent); line-height:1; }
+.q-page-info { flex:1; }
+.q-cuz { font-size:0.72rem; color:var(--muted); }
+.q-btns { display:flex; gap:6px; }
+.q-btn { background:var(--glass); border:1px solid var(--glass-border); border-radius:10px; padding:7px 12px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; color:var(--text); }
+.q-btn.primary { background:#1a1a1a; color:#fff; border:none; }
+.q-input { width:100%; background:var(--glass); border:1px solid var(--glass-border); border-radius:10px; padding:8px 12px; color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:0.9rem; outline:none; }
+.q-week { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px; }
+.q-day { background:var(--glass); border-radius:8px; padding:6px 2px; text-align:center; }
+.q-day-lbl { font-size:0.55rem; color:var(--muted); text-transform:uppercase; }
+.q-day-val { font-size:0.8rem; font-weight:700; color:var(--accent); margin-top:2px; }
+.q-day.today { border:1px solid var(--accent); }
+
+/* Books */
+.book-item { padding:14px; margin-bottom:8px; border-radius:14px; }
+.book-name { font-weight:700; font-size:0.9rem; margin-bottom:3px; }
+.book-meta { font-size:0.68rem; color:var(--muted); margin-bottom:8px; }
+.book-btns { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.book-btn { background:var(--glass); border:1px solid var(--glass-border); border-radius:8px; padding:5px 10px; font-size:0.75rem; font-weight:700; cursor:pointer; color:var(--text); }
+.book-btn.p { background:#1a1a1a; color:#fff; border:none; }
+
+/* Stats */
+.stat-section { padding:14px 16px; margin-bottom:10px; }
+.stat-section-title { font-family:'Syne',sans-serif; font-size:0.8rem; font-weight:800; margin-bottom:12px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.stat-box { background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; padding:12px; text-align:center; }
+.stat-box-val { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; color:var(--accent); }
+.stat-box-lbl { font-size:0.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+.week-bar-wrap { margin-top:12px; }
+.week-bars { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; align-items:flex-end; height:60px; }
+.week-bar-col { display:flex; flex-direction:column; align-items:center; gap:3px; height:100%; justify-content:flex-end; }
+.week-bar { width:100%; background:var(--accent); border-radius:4px 4px 0 0; min-height:3px; transition:height 0.4s; }
+.week-bar-day { font-size:0.55rem; color:var(--muted); }
+.week-bar-today .week-bar { background:var(--accent2); }
+
+/* Review */
+.review-card { padding:18px; margin-bottom:10px; }
+.review-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; margin-bottom:12px; }
+.review-q { font-size:0.78rem; color:var(--muted); margin-bottom:8px; font-weight:600; }
+.stars { display:flex; gap:6px; margin-bottom:16px; }
+.star { font-size:1.6rem; cursor:pointer; transition:transform 0.15s; opacity:0.35; }
+.star.lit { opacity:1; }
+.star:hover { transform:scale(1.2); }
+.review-ta { width:100%; background:var(--glass); border:1px solid var(--glass-border); border-radius:12px; padding:12px; color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:0.85rem; resize:none; outline:none; min-height:80px; }
+.save-btn { background:#1a1a1a; color:#fff; border:none; border-radius:10px; padding:8px 18px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; margin-top:10px; }
+
+/* Modal */
+.modal-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.6); display:none; align-items:flex-end; justify-content:center; backdrop-filter:blur(4px); }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--bg1); border:1px solid var(--glass-border); border:1px solid var(--glass-border); border-radius:24px 24px 0 0; padding:24px 20px 32px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
+body.dark .modal { background:#1f1f1f; }
+.modal h2 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:800; margin-bottom:16px; }
+.fg { margin-bottom:10px; }
+.fg label { font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); display:block; margin-bottom:6px; }
+.fg input, .fg select, .fg textarea { width:100%; background:var(--bg2); border:1px solid var(--glass-border); border-radius:6px; padding:9px 12px; color:var(--text); font-family:'Space Grotesk',sans-serif; font-size:0.9rem; outline:none; }
+.fg select option { background:var(--bg1); border:1px solid var(--glass-border); color:#fff; }
+body.light .fg input, body.light .fg select, body.light .fg textarea { color:#2d1000; background:rgba(255,160,50,0.12); }
+body.light .fg select option { background:#fff5e6; color:#2d1000; }
+.modal-acts { display:flex; gap:8px; margin-top:16px; }
+.mbtn { flex:1; padding:10px; border-radius:10px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; border:none; }
+.mbtn-p { background:#1a1a1a; color:#fff; }
+.mbtn-s { background:var(--glass); color:var(--text); border:1px solid var(--glass-border); }
+
+/* F1 */
+.f1-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-bottom:1px solid rgba(255,140,50,0.08); }
+.f1-item:last-child { border-bottom:none; }
+.f1-item.next-race { background:var(--bg2); border-left:3px solid var(--accent); }
+.f1-item.past { opacity:0.45; }
+.f1-round { font-size:0.65rem; font-weight:700; color:var(--muted); min-width:24px; }
+.f1-flag { font-size:1.2rem; }
+.f1-info { flex:1; }
+.f1-gp { font-size:0.85rem; font-weight:700; }
+.f1-date { font-size:0.65rem; color:var(--muted); }
+.f1-sprint { font-size:0.58rem; background:rgba(255,200,0,0.2); color:var(--yellow); padding:2px 6px; border-radius:99px; font-weight:700; }
+
+@media (max-width:380px) {
+  .pomo-ring { width:110px; height:110px; }
+  .pomo-time-num { font-size:1.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<!-- Splash -->
+<div class="splash" id="splash">
+  <div class="splash-logo">🌍</div>
+  <h1>DAILYSLAP</h1>
+  <div class="splash-sub">Kişisel Günlük Takip</div>
+  <div class="splash-form">
+    <label class="splash-label">Adın ne?</label>
+    <input class="splash-input" type="text" id="splash-name" placeholder="Adını yaz..." maxlength="30"/>
+    <label class="splash-label" style="margin-top:4px">Şehrin hangisi?</label>
+    <input class="splash-input" type="text" id="splash-city" placeholder="Şehir..." style="color:#fff"/>
+    <button class="splash-btn" onclick="startApp()">🚀 Başla</button>
+    <div class="splash-note">Veriler yalnızca bu cihazda saklanır</div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>DAILYSLAP</h1>
+      <div class="user-row">
+        <div id="user-lakap">🌍 Misafir</div>
+        <button onclick="editName()" style="background:none;border:none;cursor:pointer;font-size:0.75rem;opacity:0.5;padding:0">✏️</button>
+      </div>
+      <div class="date" id="date-str">—</div>
+    </div>
+    <div class="header-right">
+      <div class="live-clock">
+        <div class="time" id="clock">00:00:00</div>
+        <div class="day-name" id="day-name">—</div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-sm-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRAM TAB -->
+  <div class="tab-panel active" id="tab-program">
+    <div class="glass" style="padding-bottom:8px">
+      <div class="sched-header">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.9rem">Program</span>
+        <button class="add-btn" onclick="openModal()">+ Ekle</button>
+      </div>
+      <div id="sched-list"></div>
+    </div>
+
+    <div class="glass prog-card">
+      <div class="prog-header">
+        <span class="prog-label">Günün İlerleyişi</span>
+        <span class="prog-pct" id="day-pct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="day-fill" style="width:0%"></div></div>
+      <div class="prog-header" style="margin-top:10px">
+        <span class="prog-label">Görevler</span>
+        <span class="prog-pct" id="task-pct">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="task-fill" style="width:0%;background:var(--accent)"></div></div>
+      <div class="prog-stats">
+        <div class="stat"><span class="stat-val" id="comp-count" style="color:var(--green)">0</span><span class="stat-lbl">Tamamlanan</span></div>
+        <div class="stat"><span class="stat-val" id="rem-count" style="color:var(--accent)">0</span><span class="stat-lbl">Kalan</span></div>
+        <div class="stat"><span class="stat-val" id="namaz-count" style="color:var(--pink)">0/5</span><span class="stat-lbl">Namaz</span></div>
+        <div class="stat"><span class="stat-val" id="streak-count" style="color:var(--yellow)">0🔥</span><span class="stat-lbl">Streak</span></div>
+      </div>
+    </div>
+
+    <div class="glass streak-banner" id="streak-banner">
+      <div class="streak-fire">🔥</div>
+      <div class="streak-info">
+        <div class="streak-num" id="streak-num">0</div>
+        <div class="streak-lbl">günlük seri</div>
+      </div>
+      <div style="text-align:right">
+        <div class="streak-best" id="streak-best">En iyi: 0</div>
+        <div id="streak-cond" style="font-size:0.65rem;margin-top:4px;display:flex;gap:6px;justify-content:flex-end"></div>
+      </div>
+    </div>
+
+    <div class="glass hadis-card">
+      <div class="hadis-num" id="hadis-num">Hadis #1</div>
+      <div class="hadis-text" id="hadis-text"></div>
+    </div>
+
+    <div class="glass namaz-wrap">
+      <span class="namaz-label">🕌</span>
+      <div class="namaz-cards" id="namaz-cards"></div>
+      <button class="icon-btn" onclick="openPrayerModal()" style="flex-shrink:0">⚙️</button>
+    </div>
+
+    <div class="glass pomo-card">
+      <div class="pomo-title">🍅 Pomodoro</div>
+      <div class="pomo-ring">
+        <svg width="120" height="120" viewBox="0 0 100 100">
+          <defs><linearGradient id="pomoGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:var(--accent)"/><stop offset="100%" style="stop-color:var(--accent2)"/></linearGradient></defs>
+          <circle class="pomo-ring-bg" cx="50" cy="50" r="45"/>
+          <circle class="pomo-ring-fill" id="pomo-ring" cx="50" cy="50" r="45" stroke-dashoffset="0"/>
+        </svg>
+        <div class="pomo-time">
+          <div class="pomo-time-num" id="pomo-display">25:00</div>
+          <div class="pomo-time-lbl" id="pomo-mode-lbl">ODAK</div>
+        </div>
+      </div>
+      <div class="pomo-btns">
+        <button class="pomo-btn" onclick="resetPomo()">↺</button>
+        <button class="pomo-btn start" id="pomo-start-btn" onclick="togglePomo()">▶ Başla</button>
+        <button class="pomo-btn" onclick="skipPomo()">⏭</button>
+      </div>
+      <div class="pomo-session" id="pomo-session">Oturum 1 • 25dk Odak</div>
+    </div>
+
+    <div class="glass cur-card" id="cur-card">
+      <div class="cur-label">Şu an</div>
+      <div class="cur-name" id="cur-name">—</div>
+      <div class="cur-left" id="cur-left">—</div>
+      <button class="cur-btn" id="cur-btn" onclick="completeCurrent()">✓ Tamamladım</button>
+    </div>
+
+  </div>
+
+  <!-- QURAN TAB -->
+  <div class="tab-panel" id="tab-quran">
+    <div class="glass q-card">
+      <div class="q-title">📖 Kuran Takibi</div>
+      <div class="q-page-row">
+        <div class="q-page-num" id="q-cur-page">1</div>
+        <div class="q-page-info">
+          <div style="font-size:0.78rem;font-weight:700">Bulunduğun Sayfa</div>
+          <div class="q-cuz" id="q-cuz-info">1. Cüz</div>
+        </div>
+      </div>
+      <div class="prog-track" style="margin-bottom:12px">
+        <div class="prog-fill" id="q-fill" style="width:0%"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input class="q-input" type="number" id="q-input" placeholder="Sayfa numarası..." min="1" max="604" style="flex:1"/>
+        <button class="q-btn primary" onclick="setQuranPage()">Kaydet</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:14px">
+        <button class="q-btn" onclick="addQuranPages(-1)">−1</button>
+        <button class="q-btn" onclick="addQuranPages(1)">+1</button>
+        <button class="q-btn" onclick="addQuranPages(5)">+5</button>
+        <button class="q-btn" onclick="addQuranPages(10)">+10</button>
+      </div>
+      <div style="font-size:0.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Bu Hafta</div>
+      <div class="q-week" id="q-week"></div>
+    </div>
+  </div>
+
+  <!-- BOOKS TAB -->
+  <div class="tab-panel" id="tab-books">
+    <div class="glass" style="padding:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem">📚 Kitap Takibi</span>
+        <button class="add-btn" onclick="openBookModal()">+ Ekle</button>
+      </div>
+      <div id="book-list"></div>
+    </div>
+  </div>
+
+  <!-- SPOR TAB -->
+  <div class="tab-panel" id="tab-spor">
+    <div class="glass" style="padding:16px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem">💪 Antrenman Programı</span>
+        <button class="add-btn" onclick="openWorkoutModal()">+ Egzersiz</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px" id="workout-days"></div>
+      <div id="workout-list"></div>
+    </div>
+    <div class="glass" style="padding:16px;margin-bottom:10px">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;margin-bottom:12px;color:var(--accent)">📅 HAFTALIK ÖZET</div>
+      <div id="workout-week-summary"></div>
+    </div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div class="tab-panel" id="tab-stats">
+    <div class="glass stat-section">
+      <div class="stat-section-title">📊 Bu Hafta</div>
+      <div class="stat-grid" id="stats-grid"></div>
+      <div class="week-bar-wrap">
+        <div style="font-size:0.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Günlük Tamamlama %</div>
+        <div class="week-bars" id="week-bars"></div>
+      </div>
+    </div>
+    <div class="glass stat-section">
+      <div class="stat-section-title">🔥 Alışkanlıklar</div>
+      <div id="habit-stats"></div>
+    </div>
+  </div>
+
+  <!-- F1 TAB -->
+  <div class="tab-panel" id="tab-f1">
+    <div class="glass" style="padding-bottom:8px">
+      <div style="padding:14px 16px 8px;font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem">🏎️ F1 2026 Takvimi</div>
+      <div class="f1-list" id="f1-list"></div>
+    </div>
+  </div>
+
+  <!-- REVIEW TAB -->
+  <div class="tab-panel" id="tab-review">
+    <div class="glass review-card">
+      <div class="review-title">🌙 Günlük Değerlendirme</div>
+      <div class="review-q">Bugün ne kadar verimliydim?</div>
+      <div class="stars" id="stars">
+        <span class="star" onclick="setStar(1)">⭐</span>
+        <span class="star" onclick="setStar(2)">⭐</span>
+        <span class="star" onclick="setStar(3)">⭐</span>
+        <span class="star" onclick="setStar(4)">⭐</span>
+        <span class="star" onclick="setStar(5)">⭐</span>
+      </div>
+      <div class="review-q">📝 Günlük Not</div>
+      <textarea class="review-ta" id="review-ta" placeholder="Bugün nasıl geçti?" rows="4"></textarea>
+      <button class="save-btn" onclick="saveReview()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="switchTab('program')" id="nav-program"><span class="nav-icon">📅</span><span class="nav-lbl">Program</span></button>
+  <button class="nav-btn" onclick="switchTab('quran')" id="nav-quran"><span class="nav-icon">📖</span><span class="nav-lbl">Kuran</span></button>
+  <button class="nav-btn" onclick="switchTab('books')" id="nav-books"><span class="nav-icon">📚</span><span class="nav-lbl">Kitap</span></button>
+  <button class="nav-btn" onclick="switchTab('spor')" id="nav-spor"><span class="nav-icon">💪</span><span class="nav-lbl">Spor</span></button>
+  <button class="nav-btn" onclick="switchTab('stats')" id="nav-stats"><span class="nav-icon">📊</span><span class="nav-lbl">İstatistik</span></button>
+  <button class="nav-btn" onclick="switchTab('f1')" id="nav-f1"><span class="nav-icon">🏎️</span><span class="nav-lbl">F1</span></button>
+  <button class="nav-btn" onclick="switchTab('review')" id="nav-review"><span class="nav-icon">🌙</span><span class="nav-lbl">Değer</span></button>
+</nav>
+
+<!-- Activity Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModalOut(event)">
+  <div class="modal">
+    <h2 id="modal-title">Aktivite Ekle</h2>
+    <div class="fg"><label>Saat (opsiyonel)</label><input type="time" id="f-time"/></div>
+    <div class="fg"><label>Aktivite Adı *</label><input type="text" id="f-name" placeholder="Ne yapacaksın?"/></div>
+    <div class="fg"><label>Kategori</label>
+      <select id="f-cat">
+        <option value="ders">📚 Ders</option>
+        <option value="namaz">🕌 Namaz</option>
+        <option value="spor">💪 Spor</option>
+        <option value="muzik">🎵 Müzik</option>
+        <option value="ibadet">🤲 İbadet</option>
+        <option value="yemek">🍽️ Yemek</option>
+        <option value="uyku">😴 Uyku</option>
+        <option value="diger" selected>• Diğer</option>
+      </select>
+    </div>
+    <div class="fg"><label>Not</label><input type="text" id="f-note" placeholder="Opsiyonel not..."/></div>
+    <div class="modal-acts">
+      <button class="mbtn mbtn-s" onclick="closeModal()">İptal</button>
+      <button class="mbtn mbtn-p" onclick="saveItem()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Prayer Modal -->
+<div class="modal-overlay" id="prayer-modal" onclick="closePrayerModalOut(event)">
+  <div class="modal">
+    <h2>🕌 Namaz Vakitleri</h2>
+    <div style="font-size:0.72rem;color:var(--muted);margin-bottom:14px">
+      <a href="https://namazvakitleri.diyanet.gov.tr" target="_blank" style="color:var(--accent2)">diyanet.gov.tr</a> sitesinden bakıp gir. (Çorlu vakitleri varsayılan)
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="fg"><label>İmsak</label><input type="time" id="p-imsak"/></div>
+      <div class="fg"><label>Sabah</label><input type="time" id="p-sabah"/></div>
+      <div class="fg"><label>Öğle</label><input type="time" id="p-ogle"/></div>
+      <div class="fg"><label>İkindi</label><input type="time" id="p-ikindi"/></div>
+      <div class="fg"><label>Akşam</label><input type="time" id="p-aksam"/></div>
+      <div class="fg"><label>Yatsı</label><input type="time" id="p-yatsi"/></div>
+    </div>
+    <div class="modal-acts" style="margin-top:12px">
+      <button class="mbtn mbtn-s" onclick="closePrayerModal()">İptal</button>
+      <button class="mbtn mbtn-p" onclick="savePrayerTimes()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Workout Modal -->
+<div class="modal-overlay" id="workout-modal" onclick="closeWorkoutModalOut(event)">
+  <div class="modal">
+    <h2 id="workout-modal-title">Egzersiz Ekle</h2>
+    <div class="fg"><label>Egzersiz Adı *</label><input type="text" id="w-name" placeholder="Örn: Bench Press"/></div>
+    <div class="fg"><label>Gün</label>
+      <select id="w-day">
+        <option value="0">Pazartesi</option><option value="1">Salı</option>
+        <option value="2">Çarşamba</option><option value="3">Perşembe</option>
+        <option value="4">Cuma</option><option value="5">Cumartesi</option>
+        <option value="6">Pazar</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="fg"><label>Set</label><input type="number" id="w-sets" placeholder="4" min="1"/></div>
+      <div class="fg"><label>Tekrar</label><input type="number" id="w-reps" placeholder="10" min="1"/></div>
+      <div class="fg"><label>Ağırlık (kg)</label><input type="number" id="w-weight" placeholder="60" min="0"/></div>
+    </div>
+    <div class="fg"><label>Not</label><input type="text" id="w-note" placeholder="Opsiyonel..."/></div>
+    <div class="modal-acts">
+      <button class="mbtn mbtn-s" onclick="closeWorkoutModal()">İptal</button>
+      <button class="mbtn mbtn-p" onclick="saveWorkout()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Book Modal -->
+<div class="modal-overlay" id="book-modal" onclick="closeBookModalOut(event)">
+  <div class="modal">
+    <h2 id="book-modal-title">Kitap Ekle</h2>
+    <div class="fg"><label>Kitap Adı *</label><input type="text" id="b-name" placeholder="Kitabın adı..."/></div>
+    <div class="fg"><label>Toplam Sayfa *</label><input type="number" id="b-total" placeholder="Örn: 350" min="1"/></div>
+    <div class="fg"><label>Günlük Hedef (sayfa)</label><input type="number" id="b-daily" placeholder="Örn: 20" min="1"/></div>
+    <div class="modal-acts">
+      <button class="mbtn mbtn-s" onclick="closeBookModal()">İptal</button>
+      <button class="mbtn mbtn-p" onclick="saveBook()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CORLU_2026 = {
+  "1-1":{"imsak":"06:45","sabah":"06:55","ogle":"13:17","ikindi":"15:32","aksam":"17:50","yatsi":"19:23"},
+  "1-2":{"imsak":"06:45","sabah":"06:55","ogle":"13:17","ikindi":"15:33","aksam":"17:50","yatsi":"19:24"},
+  "1-3":{"imsak":"06:45","sabah":"06:55","ogle":"13:18","ikindi":"15:33","aksam":"17:51","yatsi":"19:25"},
+  "1-4":{"imsak":"06:45","sabah":"06:55","ogle":"13:18","ikindi":"15:34","aksam":"17:52","yatsi":"19:26"},
+  "1-5":{"imsak":"06:45","sabah":"06:55","ogle":"13:18","ikindi":"15:35","aksam":"17:53","yatsi":"19:26"},
+  "1-6":{"imsak":"06:45","sabah":"06:55","ogle":"13:19","ikindi":"15:36","aksam":"17:54","yatsi":"19:27"},
+  "1-7":{"imsak":"06:45","sabah":"06:55","ogle":"13:19","ikindi":"15:37","aksam":"17:55","yatsi":"19:28"},
+  "1-8":{"imsak":"06:45","sabah":"06:55","ogle":"13:20","ikindi":"15:38","aksam":"17:56","yatsi":"19:29"},
+  "1-9":{"imsak":"06:45","sabah":"06:55","ogle":"13:20","ikindi":"15:39","aksam":"17:57","yatsi":"19:30"},
+  "1-10":{"imsak":"06:45","sabah":"06:55","ogle":"13:21","ikindi":"15:39","aksam":"17:58","yatsi":"19:31"},
+  "1-11":{"imsak":"06:45","sabah":"06:55","ogle":"13:21","ikindi":"15:40","aksam":"17:59","yatsi":"19:32"},
+  "1-12":{"imsak":"06:45","sabah":"06:55","ogle":"13:21","ikindi":"15:41","aksam":"18:00","yatsi":"19:33"},
+  "1-13":{"imsak":"06:45","sabah":"06:55","ogle":"13:22","ikindi":"15:42","aksam":"18:01","yatsi":"19:34"},
+  "1-14":{"imsak":"06:44","sabah":"06:54","ogle":"13:22","ikindi":"15:43","aksam":"18:02","yatsi":"19:34"},
+  "1-15":{"imsak":"06:44","sabah":"06:54","ogle":"13:23","ikindi":"15:44","aksam":"18:03","yatsi":"19:35"},
+  "1-16":{"imsak":"06:44","sabah":"06:54","ogle":"13:23","ikindi":"15:45","aksam":"18:05","yatsi":"19:36"},
+  "1-17":{"imsak":"06:44","sabah":"06:54","ogle":"13:23","ikindi":"15:46","aksam":"18:06","yatsi":"19:37"},
+  "1-18":{"imsak":"06:43","sabah":"06:53","ogle":"13:24","ikindi":"15:47","aksam":"18:07","yatsi":"19:38"},
+  "1-19":{"imsak":"06:43","sabah":"06:53","ogle":"13:24","ikindi":"15:48","aksam":"18:08","yatsi":"19:39"},
+  "1-20":{"imsak":"06:42","sabah":"06:52","ogle":"13:24","ikindi":"15:49","aksam":"18:09","yatsi":"19:40"},
+  "1-21":{"imsak":"06:42","sabah":"06:52","ogle":"13:24","ikindi":"15:50","aksam":"18:10","yatsi":"19:41"},
+  "1-22":{"imsak":"06:42","sabah":"06:52","ogle":"13:25","ikindi":"15:51","aksam":"18:12","yatsi":"19:42"},
+  "1-23":{"imsak":"06:41","sabah":"06:51","ogle":"13:25","ikindi":"15:53","aksam":"18:13","yatsi":"19:44"},
+  "1-24":{"imsak":"06:40","sabah":"06:50","ogle":"13:25","ikindi":"15:54","aksam":"18:14","yatsi":"19:45"},
+  "1-25":{"imsak":"06:40","sabah":"06:50","ogle":"13:25","ikindi":"15:55","aksam":"18:15","yatsi":"19:46"},
+  "1-26":{"imsak":"06:39","sabah":"06:49","ogle":"13:26","ikindi":"15:56","aksam":"18:16","yatsi":"19:47"},
+  "1-27":{"imsak":"06:39","sabah":"06:49","ogle":"13:26","ikindi":"15:57","aksam":"18:18","yatsi":"19:48"},
+  "1-28":{"imsak":"06:38","sabah":"06:48","ogle":"13:26","ikindi":"15:58","aksam":"18:19","yatsi":"19:49"},
+  "1-29":{"imsak":"06:37","sabah":"06:47","ogle":"13:26","ikindi":"15:59","aksam":"18:20","yatsi":"19:50"},
+  "1-30":{"imsak":"06:37","sabah":"06:47","ogle":"13:26","ikindi":"16:00","aksam":"18:21","yatsi":"19:51"},
+  "1-31":{"imsak":"06:36","sabah":"06:46","ogle":"13:27","ikindi":"16:01","aksam":"18:23","yatsi":"19:52"},
+  "2-1":{"imsak":"06:35","sabah":"06:45","ogle":"13:27","ikindi":"16:02","aksam":"18:24","yatsi":"19:53"},
+  "2-2":{"imsak":"06:34","sabah":"06:44","ogle":"13:27","ikindi":"16:03","aksam":"18:25","yatsi":"19:54"},
+  "2-3":{"imsak":"06:33","sabah":"06:43","ogle":"13:27","ikindi":"16:04","aksam":"18:26","yatsi":"19:55"},
+  "2-4":{"imsak":"06:32","sabah":"06:42","ogle":"13:27","ikindi":"16:05","aksam":"18:28","yatsi":"19:56"},
+  "2-5":{"imsak":"06:32","sabah":"06:42","ogle":"13:27","ikindi":"16:06","aksam":"18:29","yatsi":"19:58"},
+  "2-6":{"imsak":"06:31","sabah":"06:41","ogle":"13:27","ikindi":"16:07","aksam":"18:30","yatsi":"19:59"},
+  "2-7":{"imsak":"06:30","sabah":"06:40","ogle":"13:27","ikindi":"16:08","aksam":"18:31","yatsi":"20:00"},
+  "2-8":{"imsak":"06:29","sabah":"06:39","ogle":"13:27","ikindi":"16:09","aksam":"18:33","yatsi":"20:01"},
+  "2-9":{"imsak":"06:28","sabah":"06:38","ogle":"13:27","ikindi":"16:10","aksam":"18:34","yatsi":"20:02"},
+  "2-10":{"imsak":"06:27","sabah":"06:37","ogle":"13:27","ikindi":"16:11","aksam":"18:35","yatsi":"20:03"},
+  "2-11":{"imsak":"06:25","sabah":"06:35","ogle":"13:27","ikindi":"16:12","aksam":"18:36","yatsi":"20:04"},
+  "2-12":{"imsak":"06:24","sabah":"06:34","ogle":"13:27","ikindi":"16:13","aksam":"18:38","yatsi":"20:05"},
+  "2-13":{"imsak":"06:23","sabah":"06:33","ogle":"13:27","ikindi":"16:14","aksam":"18:39","yatsi":"20:06"},
+  "2-14":{"imsak":"06:22","sabah":"06:32","ogle":"13:27","ikindi":"16:15","aksam":"18:40","yatsi":"20:08"},
+  "2-15":{"imsak":"06:21","sabah":"06:31","ogle":"13:27","ikindi":"16:16","aksam":"18:41","yatsi":"20:09"},
+  "2-16":{"imsak":"06:20","sabah":"06:30","ogle":"13:27","ikindi":"16:17","aksam":"18:43","yatsi":"20:10"},
+  "2-17":{"imsak":"06:18","sabah":"06:28","ogle":"13:27","ikindi":"16:18","aksam":"18:44","yatsi":"20:11"},
+  "2-18":{"imsak":"06:17","sabah":"06:27","ogle":"13:27","ikindi":"16:19","aksam":"18:45","yatsi":"20:12"},
+  "2-19":{"imsak":"06:16","sabah":"06:26","ogle":"13:27","ikindi":"16:20","aksam":"18:46","yatsi":"20:13"},
+  "2-20":{"imsak":"06:15","sabah":"06:25","ogle":"13:27","ikindi":"16:20","aksam":"18:48","yatsi":"20:14"},
+  "2-21":{"imsak":"06:13","sabah":"06:23","ogle":"13:27","ikindi":"16:21","aksam":"18:49","yatsi":"20:15"},
+  "2-22":{"imsak":"06:12","sabah":"06:22","ogle":"13:27","ikindi":"16:22","aksam":"18:50","yatsi":"20:16"},
+  "2-23":{"imsak":"06:10","sabah":"06:20","ogle":"13:27","ikindi":"16:23","aksam":"18:51","yatsi":"20:18"},
+  "2-24":{"imsak":"06:09","sabah":"06:19","ogle":"13:27","ikindi":"16:24","aksam":"18:52","yatsi":"20:19"},
+  "2-25":{"imsak":"06:08","sabah":"06:18","ogle":"13:26","ikindi":"16:25","aksam":"18:53","yatsi":"20:20"},
+  "2-26":{"imsak":"06:06","sabah":"06:16","ogle":"13:26","ikindi":"16:26","aksam":"18:55","yatsi":"20:21"},
+  "2-27":{"imsak":"06:05","sabah":"06:15","ogle":"13:26","ikindi":"16:26","aksam":"18:56","yatsi":"20:22"},
+  "2-28":{"imsak":"06:03","sabah":"06:13","ogle":"13:26","ikindi":"16:27","aksam":"18:57","yatsi":"20:23"},
+  "3-1":{"imsak":"06:02","sabah":"06:12","ogle":"13:26","ikindi":"16:28","aksam":"18:58","yatsi":"20:24"},
+  "3-2":{"imsak":"06:00","sabah":"06:10","ogle":"13:26","ikindi":"16:29","aksam":"18:59","yatsi":"20:25"},
+  "3-3":{"imsak":"05:59","sabah":"06:09","ogle":"13:25","ikindi":"16:30","aksam":"19:00","yatsi":"20:27"},
+  "3-4":{"imsak":"05:57","sabah":"06:07","ogle":"13:25","ikindi":"16:30","aksam":"19:02","yatsi":"20:28"},
+  "3-5":{"imsak":"05:55","sabah":"06:05","ogle":"13:25","ikindi":"16:31","aksam":"19:03","yatsi":"20:29"},
+  "3-6":{"imsak":"05:54","sabah":"06:04","ogle":"13:25","ikindi":"16:32","aksam":"19:04","yatsi":"20:30"},
+  "3-7":{"imsak":"05:52","sabah":"06:02","ogle":"13:24","ikindi":"16:32","aksam":"19:05","yatsi":"20:31"},
+  "3-8":{"imsak":"05:51","sabah":"06:01","ogle":"13:24","ikindi":"16:33","aksam":"19:06","yatsi":"20:32"},
+  "3-9":{"imsak":"05:49","sabah":"05:59","ogle":"13:24","ikindi":"16:34","aksam":"19:07","yatsi":"20:33"},
+  "3-10":{"imsak":"05:47","sabah":"05:57","ogle":"13:24","ikindi":"16:34","aksam":"19:08","yatsi":"20:35"},
+  "3-11":{"imsak":"05:46","sabah":"05:56","ogle":"13:23","ikindi":"16:35","aksam":"19:10","yatsi":"20:36"},
+  "3-12":{"imsak":"05:44","sabah":"05:54","ogle":"13:23","ikindi":"16:36","aksam":"19:11","yatsi":"20:37"},
+  "3-13":{"imsak":"05:42","sabah":"05:52","ogle":"13:23","ikindi":"16:36","aksam":"19:12","yatsi":"20:38"},
+  "3-14":{"imsak":"05:41","sabah":"05:51","ogle":"13:23","ikindi":"16:37","aksam":"19:13","yatsi":"20:39"},
+  "3-15":{"imsak":"05:39","sabah":"05:49","ogle":"13:22","ikindi":"16:38","aksam":"19:14","yatsi":"20:40"},
+  "3-16":{"imsak":"05:37","sabah":"05:47","ogle":"13:22","ikindi":"16:38","aksam":"19:15","yatsi":"20:42"},
+  "3-17":{"imsak":"05:35","sabah":"05:45","ogle":"13:22","ikindi":"16:39","aksam":"19:16","yatsi":"20:43"},
+  "3-18":{"imsak":"05:33","sabah":"05:43","ogle":"13:21","ikindi":"16:39","aksam":"19:17","yatsi":"20:44"},
+  "3-19":{"imsak":"05:32","sabah":"05:42","ogle":"13:21","ikindi":"16:40","aksam":"19:18","yatsi":"20:45"},
+  "3-20":{"imsak":"05:30","sabah":"05:40","ogle":"13:21","ikindi":"16:41","aksam":"19:19","yatsi":"20:46"},
+  "3-21":{"imsak":"05:28","sabah":"05:38","ogle":"13:21","ikindi":"16:41","aksam":"19:21","yatsi":"20:48"},
+  "3-22":{"imsak":"05:26","sabah":"05:36","ogle":"13:20","ikindi":"16:42","aksam":"19:22","yatsi":"20:49"},
+  "3-23":{"imsak":"05:24","sabah":"05:34","ogle":"13:20","ikindi":"16:42","aksam":"19:23","yatsi":"20:50"},
+  "3-24":{"imsak":"05:23","sabah":"05:33","ogle":"13:20","ikindi":"16:43","aksam":"19:24","yatsi":"20:51"},
+  "3-25":{"imsak":"05:21","sabah":"05:31","ogle":"13:19","ikindi":"16:43","aksam":"19:25","yatsi":"20:52"},
+  "3-26":{"imsak":"05:19","sabah":"05:29","ogle":"13:19","ikindi":"16:44","aksam":"19:26","yatsi":"20:54"},
+  "3-27":{"imsak":"05:17","sabah":"05:27","ogle":"13:19","ikindi":"16:44","aksam":"19:27","yatsi":"20:55"},
+  "3-28":{"imsak":"05:15","sabah":"05:25","ogle":"13:19","ikindi":"16:45","aksam":"19:28","yatsi":"20:56"},
+  "3-29":{"imsak":"05:13","sabah":"05:23","ogle":"13:18","ikindi":"16:45","aksam":"19:29","yatsi":"20:57"},
+  "3-30":{"imsak":"05:11","sabah":"05:21","ogle":"13:18","ikindi":"16:46","aksam":"19:30","yatsi":"20:59"},
+  "3-31":{"imsak":"05:09","sabah":"05:19","ogle":"13:18","ikindi":"16:46","aksam":"19:31","yatsi":"21:00"},
+  "4-1":{"imsak":"05:08","sabah":"05:18","ogle":"13:17","ikindi":"16:47","aksam":"19:32","yatsi":"21:01"},
+  "4-2":{"imsak":"05:06","sabah":"05:16","ogle":"13:17","ikindi":"16:47","aksam":"19:33","yatsi":"21:03"},
+  "4-3":{"imsak":"05:04","sabah":"05:14","ogle":"13:17","ikindi":"16:47","aksam":"19:35","yatsi":"21:04"},
+  "4-4":{"imsak":"05:02","sabah":"05:12","ogle":"13:16","ikindi":"16:48","aksam":"19:36","yatsi":"21:05"},
+  "4-5":{"imsak":"05:00","sabah":"05:10","ogle":"13:16","ikindi":"16:48","aksam":"19:37","yatsi":"21:06"},
+  "4-6":{"imsak":"04:58","sabah":"05:08","ogle":"13:16","ikindi":"16:49","aksam":"19:38","yatsi":"21:08"},
+  "4-7":{"imsak":"04:56","sabah":"05:06","ogle":"13:16","ikindi":"16:49","aksam":"19:39","yatsi":"21:09"},
+  "4-8":{"imsak":"04:54","sabah":"05:04","ogle":"13:15","ikindi":"16:49","aksam":"19:40","yatsi":"21:10"},
+  "4-9":{"imsak":"04:52","sabah":"05:02","ogle":"13:15","ikindi":"16:50","aksam":"19:41","yatsi":"21:12"},
+  "4-10":{"imsak":"04:50","sabah":"05:00","ogle":"13:15","ikindi":"16:50","aksam":"19:42","yatsi":"21:13"},
+  "4-11":{"imsak":"04:48","sabah":"04:58","ogle":"13:14","ikindi":"16:51","aksam":"19:43","yatsi":"21:15"},
+  "4-12":{"imsak":"04:46","sabah":"04:56","ogle":"13:14","ikindi":"16:51","aksam":"19:44","yatsi":"21:16"},
+  "4-13":{"imsak":"04:45","sabah":"04:55","ogle":"13:14","ikindi":"16:51","aksam":"19:45","yatsi":"21:17"},
+  "4-14":{"imsak":"04:43","sabah":"04:53","ogle":"13:14","ikindi":"16:52","aksam":"19:46","yatsi":"21:19"},
+  "4-15":{"imsak":"04:41","sabah":"04:51","ogle":"13:13","ikindi":"16:52","aksam":"19:47","yatsi":"21:20"},
+  "4-16":{"imsak":"04:39","sabah":"04:49","ogle":"13:13","ikindi":"16:52","aksam":"19:48","yatsi":"21:22"},
+  "4-17":{"imsak":"04:37","sabah":"04:47","ogle":"13:13","ikindi":"16:53","aksam":"19:49","yatsi":"21:23"},
+  "4-18":{"imsak":"04:35","sabah":"04:45","ogle":"13:13","ikindi":"16:53","aksam":"19:51","yatsi":"21:24"},
+  "4-19":{"imsak":"04:33","sabah":"04:43","ogle":"13:13","ikindi":"16:53","aksam":"19:52","yatsi":"21:26"},
+  "4-20":{"imsak":"04:31","sabah":"04:41","ogle":"13:12","ikindi":"16:54","aksam":"19:53","yatsi":"21:27"},
+  "4-21":{"imsak":"04:29","sabah":"04:39","ogle":"13:12","ikindi":"16:54","aksam":"19:54","yatsi":"21:29"},
+  "4-22":{"imsak":"04:27","sabah":"04:37","ogle":"13:12","ikindi":"16:54","aksam":"19:55","yatsi":"21:30"},
+  "4-23":{"imsak":"04:25","sabah":"04:35","ogle":"13:12","ikindi":"16:55","aksam":"19:56","yatsi":"21:32"},
+  "4-24":{"imsak":"04:23","sabah":"04:33","ogle":"13:12","ikindi":"16:55","aksam":"19:57","yatsi":"21:33"},
+  "4-25":{"imsak":"04:22","sabah":"04:32","ogle":"13:11","ikindi":"16:55","aksam":"19:58","yatsi":"21:35"},
+  "4-26":{"imsak":"04:20","sabah":"04:30","ogle":"13:11","ikindi":"16:56","aksam":"19:59","yatsi":"21:36"},
+  "4-27":{"imsak":"04:18","sabah":"04:28","ogle":"13:11","ikindi":"16:56","aksam":"20:00","yatsi":"21:38"},
+  "4-28":{"imsak":"04:16","sabah":"04:26","ogle":"13:11","ikindi":"16:56","aksam":"20:01","yatsi":"21:39"},
+  "4-29":{"imsak":"04:14","sabah":"04:24","ogle":"13:11","ikindi":"16:56","aksam":"20:02","yatsi":"21:41"},
+  "4-30":{"imsak":"04:12","sabah":"04:22","ogle":"13:11","ikindi":"16:57","aksam":"20:03","yatsi":"21:42"},
+  "5-1":{"imsak":"04:10","sabah":"04:20","ogle":"13:10","ikindi":"16:57","aksam":"20:04","yatsi":"21:44"},
+  "5-2":{"imsak":"04:09","sabah":"04:19","ogle":"13:10","ikindi":"16:57","aksam":"20:05","yatsi":"21:45"},
+  "5-3":{"imsak":"04:07","sabah":"04:17","ogle":"13:10","ikindi":"16:58","aksam":"20:07","yatsi":"21:47"},
+  "5-4":{"imsak":"04:05","sabah":"04:15","ogle":"13:10","ikindi":"16:58","aksam":"20:08","yatsi":"21:48"},
+  "5-5":{"imsak":"04:03","sabah":"04:13","ogle":"13:10","ikindi":"16:58","aksam":"20:09","yatsi":"21:50"},
+  "5-6":{"imsak":"04:02","sabah":"04:12","ogle":"13:10","ikindi":"16:58","aksam":"20:10","yatsi":"21:51"},
+  "5-7":{"imsak":"04:00","sabah":"04:10","ogle":"13:10","ikindi":"16:59","aksam":"20:11","yatsi":"21:53"},
+  "5-8":{"imsak":"03:58","sabah":"04:08","ogle":"13:10","ikindi":"16:59","aksam":"20:12","yatsi":"21:54"},
+  "5-9":{"imsak":"03:56","sabah":"04:06","ogle":"13:10","ikindi":"16:59","aksam":"20:13","yatsi":"21:56"},
+  "5-10":{"imsak":"03:55","sabah":"04:05","ogle":"13:10","ikindi":"17:00","aksam":"20:14","yatsi":"21:57"},
+  "5-11":{"imsak":"03:53","sabah":"04:03","ogle":"13:10","ikindi":"17:00","aksam":"20:15","yatsi":"21:59"},
+  "5-12":{"imsak":"03:51","sabah":"04:01","ogle":"13:10","ikindi":"17:00","aksam":"20:16","yatsi":"22:00"},
+  "5-13":{"imsak":"03:50","sabah":"04:00","ogle":"13:10","ikindi":"17:00","aksam":"20:17","yatsi":"22:02"},
+  "5-14":{"imsak":"03:48","sabah":"03:58","ogle":"13:10","ikindi":"17:01","aksam":"20:18","yatsi":"22:03"},
+  "5-15":{"imsak":"03:47","sabah":"03:57","ogle":"13:10","ikindi":"17:01","aksam":"20:19","yatsi":"22:05"},
+  "5-16":{"imsak":"03:45","sabah":"03:55","ogle":"13:10","ikindi":"17:01","aksam":"20:20","yatsi":"22:07"},
+  "5-17":{"imsak":"03:44","sabah":"03:54","ogle":"13:10","ikindi":"17:02","aksam":"20:21","yatsi":"22:08"},
+  "5-18":{"imsak":"03:42","sabah":"03:52","ogle":"13:10","ikindi":"17:02","aksam":"20:22","yatsi":"22:09"},
+  "5-19":{"imsak":"03:41","sabah":"03:51","ogle":"13:10","ikindi":"17:02","aksam":"20:23","yatsi":"22:11"},
+  "5-20":{"imsak":"03:39","sabah":"03:49","ogle":"13:10","ikindi":"17:03","aksam":"20:24","yatsi":"22:12"},
+  "5-21":{"imsak":"03:38","sabah":"03:48","ogle":"13:10","ikindi":"17:03","aksam":"20:25","yatsi":"22:14"},
+  "5-22":{"imsak":"03:36","sabah":"03:46","ogle":"13:10","ikindi":"17:03","aksam":"20:26","yatsi":"22:15"},
+  "5-23":{"imsak":"03:35","sabah":"03:45","ogle":"13:10","ikindi":"17:03","aksam":"20:27","yatsi":"22:17"},
+  "5-24":{"imsak":"03:34","sabah":"03:44","ogle":"13:10","ikindi":"17:04","aksam":"20:27","yatsi":"22:18"},
+  "5-25":{"imsak":"03:33","sabah":"03:43","ogle":"13:10","ikindi":"17:04","aksam":"20:28","yatsi":"22:19"},
+  "5-26":{"imsak":"03:31","sabah":"03:41","ogle":"13:10","ikindi":"17:04","aksam":"20:29","yatsi":"22:21"},
+  "5-27":{"imsak":"03:30","sabah":"03:40","ogle":"13:10","ikindi":"17:05","aksam":"20:30","yatsi":"22:22"},
+  "5-28":{"imsak":"03:29","sabah":"03:39","ogle":"13:11","ikindi":"17:05","aksam":"20:31","yatsi":"22:23"},
+  "5-29":{"imsak":"03:28","sabah":"03:38","ogle":"13:11","ikindi":"17:05","aksam":"20:32","yatsi":"22:25"},
+  "5-30":{"imsak":"03:27","sabah":"03:37","ogle":"13:11","ikindi":"17:05","aksam":"20:32","yatsi":"22:26"},
+  "5-31":{"imsak":"03:26","sabah":"03:36","ogle":"13:11","ikindi":"17:06","aksam":"20:33","yatsi":"22:27"},
+  "6-1":{"imsak":"03:25","sabah":"03:35","ogle":"13:11","ikindi":"17:06","aksam":"20:34","yatsi":"22:28"},
+  "6-2":{"imsak":"03:24","sabah":"03:34","ogle":"13:11","ikindi":"17:06","aksam":"20:35","yatsi":"22:30"},
+  "6-3":{"imsak":"03:23","sabah":"03:33","ogle":"13:11","ikindi":"17:07","aksam":"20:36","yatsi":"22:31"},
+  "6-4":{"imsak":"03:22","sabah":"03:32","ogle":"13:12","ikindi":"17:07","aksam":"20:36","yatsi":"22:32"},
+  "6-5":{"imsak":"03:22","sabah":"03:32","ogle":"13:12","ikindi":"17:07","aksam":"20:37","yatsi":"22:33"},
+  "6-6":{"imsak":"03:21","sabah":"03:31","ogle":"13:12","ikindi":"17:07","aksam":"20:38","yatsi":"22:34"},
+  "6-7":{"imsak":"03:20","sabah":"03:30","ogle":"13:12","ikindi":"17:08","aksam":"20:38","yatsi":"22:35"},
+  "6-8":{"imsak":"03:20","sabah":"03:30","ogle":"13:12","ikindi":"17:08","aksam":"20:39","yatsi":"22:36"},
+  "6-9":{"imsak":"03:19","sabah":"03:29","ogle":"13:12","ikindi":"17:08","aksam":"20:39","yatsi":"22:37"},
+  "6-10":{"imsak":"03:19","sabah":"03:29","ogle":"13:13","ikindi":"17:08","aksam":"20:40","yatsi":"22:37"},
+  "6-11":{"imsak":"03:18","sabah":"03:28","ogle":"13:13","ikindi":"17:09","aksam":"20:41","yatsi":"22:38"},
+  "6-12":{"imsak":"03:18","sabah":"03:28","ogle":"13:13","ikindi":"17:09","aksam":"20:41","yatsi":"22:39"},
+  "6-13":{"imsak":"03:17","sabah":"03:27","ogle":"13:13","ikindi":"17:09","aksam":"20:42","yatsi":"22:40"},
+  "6-14":{"imsak":"03:17","sabah":"03:27","ogle":"13:13","ikindi":"17:10","aksam":"20:42","yatsi":"22:40"},
+  "6-15":{"imsak":"03:17","sabah":"03:27","ogle":"13:14","ikindi":"17:10","aksam":"20:42","yatsi":"22:41"},
+  "6-16":{"imsak":"03:17","sabah":"03:27","ogle":"13:14","ikindi":"17:10","aksam":"20:43","yatsi":"22:41"},
+  "6-17":{"imsak":"03:17","sabah":"03:27","ogle":"13:14","ikindi":"17:10","aksam":"20:43","yatsi":"22:42"},
+  "6-18":{"imsak":"03:17","sabah":"03:27","ogle":"13:14","ikindi":"17:11","aksam":"20:43","yatsi":"22:42"},
+  "6-19":{"imsak":"03:17","sabah":"03:27","ogle":"13:15","ikindi":"17:11","aksam":"20:44","yatsi":"22:43"},
+  "6-20":{"imsak":"03:17","sabah":"03:27","ogle":"13:15","ikindi":"17:11","aksam":"20:44","yatsi":"22:43"},
+  "6-21":{"imsak":"03:17","sabah":"03:27","ogle":"13:15","ikindi":"17:11","aksam":"20:44","yatsi":"22:43"},
+  "6-22":{"imsak":"03:17","sabah":"03:27","ogle":"13:15","ikindi":"17:11","aksam":"20:45","yatsi":"22:44"},
+  "6-23":{"imsak":"03:18","sabah":"03:28","ogle":"13:15","ikindi":"17:12","aksam":"20:45","yatsi":"22:44"},
+  "6-24":{"imsak":"03:18","sabah":"03:28","ogle":"13:16","ikindi":"17:12","aksam":"20:45","yatsi":"22:44"},
+  "6-25":{"imsak":"03:18","sabah":"03:28","ogle":"13:16","ikindi":"17:12","aksam":"20:45","yatsi":"22:44"},
+  "6-26":{"imsak":"03:19","sabah":"03:29","ogle":"13:16","ikindi":"17:12","aksam":"20:45","yatsi":"22:44"},
+  "6-27":{"imsak":"03:19","sabah":"03:29","ogle":"13:16","ikindi":"17:12","aksam":"20:45","yatsi":"22:44"},
+  "6-28":{"imsak":"03:20","sabah":"03:30","ogle":"13:17","ikindi":"17:13","aksam":"20:45","yatsi":"22:44"},
+  "6-29":{"imsak":"03:21","sabah":"03:31","ogle":"13:17","ikindi":"17:13","aksam":"20:45","yatsi":"22:43"},
+  "6-30":{"imsak":"03:21","sabah":"03:31","ogle":"13:17","ikindi":"17:13","aksam":"20:45","yatsi":"22:43"},
+  "7-1":{"imsak":"03:22","sabah":"03:32","ogle":"13:17","ikindi":"17:13","aksam":"20:45","yatsi":"22:43"},
+  "7-2":{"imsak":"03:23","sabah":"03:33","ogle":"13:17","ikindi":"17:13","aksam":"20:45","yatsi":"22:43"},
+  "7-3":{"imsak":"03:24","sabah":"03:34","ogle":"13:17","ikindi":"17:13","aksam":"20:45","yatsi":"22:42"},
+  "7-4":{"imsak":"03:24","sabah":"03:34","ogle":"13:18","ikindi":"17:13","aksam":"20:44","yatsi":"22:42"},
+  "7-5":{"imsak":"03:25","sabah":"03:35","ogle":"13:18","ikindi":"17:13","aksam":"20:44","yatsi":"22:41"},
+  "7-6":{"imsak":"03:26","sabah":"03:36","ogle":"13:18","ikindi":"17:14","aksam":"20:44","yatsi":"22:41"},
+  "7-7":{"imsak":"03:27","sabah":"03:37","ogle":"13:18","ikindi":"17:14","aksam":"20:44","yatsi":"22:40"},
+  "7-8":{"imsak":"03:28","sabah":"03:38","ogle":"13:18","ikindi":"17:14","aksam":"20:43","yatsi":"22:39"},
+  "7-9":{"imsak":"03:30","sabah":"03:40","ogle":"13:18","ikindi":"17:14","aksam":"20:43","yatsi":"22:38"},
+  "7-10":{"imsak":"03:31","sabah":"03:41","ogle":"13:19","ikindi":"17:14","aksam":"20:43","yatsi":"22:38"},
+  "7-11":{"imsak":"03:32","sabah":"03:42","ogle":"13:19","ikindi":"17:14","aksam":"20:42","yatsi":"22:37"},
+  "7-12":{"imsak":"03:33","sabah":"03:43","ogle":"13:19","ikindi":"17:14","aksam":"20:42","yatsi":"22:36"},
+  "7-13":{"imsak":"03:34","sabah":"03:44","ogle":"13:19","ikindi":"17:14","aksam":"20:41","yatsi":"22:35"},
+  "7-14":{"imsak":"03:36","sabah":"03:46","ogle":"13:19","ikindi":"17:14","aksam":"20:41","yatsi":"22:34"},
+  "7-15":{"imsak":"03:37","sabah":"03:47","ogle":"13:19","ikindi":"17:14","aksam":"20:40","yatsi":"22:33"},
+  "7-16":{"imsak":"03:38","sabah":"03:48","ogle":"13:19","ikindi":"17:14","aksam":"20:40","yatsi":"22:32"},
+  "7-17":{"imsak":"03:39","sabah":"03:49","ogle":"13:19","ikindi":"17:14","aksam":"20:39","yatsi":"22:31"},
+  "7-18":{"imsak":"03:41","sabah":"03:51","ogle":"13:20","ikindi":"17:13","aksam":"20:38","yatsi":"22:30"},
+  "7-19":{"imsak":"03:42","sabah":"03:52","ogle":"13:20","ikindi":"17:13","aksam":"20:38","yatsi":"22:29"},
+  "7-20":{"imsak":"03:44","sabah":"03:54","ogle":"13:20","ikindi":"17:13","aksam":"20:37","yatsi":"22:27"},
+  "7-21":{"imsak":"03:45","sabah":"03:55","ogle":"13:20","ikindi":"17:13","aksam":"20:36","yatsi":"22:26"},
+  "7-22":{"imsak":"03:47","sabah":"03:57","ogle":"13:20","ikindi":"17:13","aksam":"20:35","yatsi":"22:25"},
+  "7-23":{"imsak":"03:48","sabah":"03:58","ogle":"13:20","ikindi":"17:13","aksam":"20:34","yatsi":"22:24"},
+  "7-24":{"imsak":"03:49","sabah":"03:59","ogle":"13:20","ikindi":"17:12","aksam":"20:34","yatsi":"22:22"},
+  "7-25":{"imsak":"03:51","sabah":"04:01","ogle":"13:20","ikindi":"17:12","aksam":"20:33","yatsi":"22:21"},
+  "7-26":{"imsak":"03:52","sabah":"04:02","ogle":"13:20","ikindi":"17:12","aksam":"20:32","yatsi":"22:19"},
+  "7-27":{"imsak":"03:54","sabah":"04:04","ogle":"13:20","ikindi":"17:12","aksam":"20:31","yatsi":"22:18"},
+  "7-28":{"imsak":"03:55","sabah":"04:05","ogle":"13:20","ikindi":"17:11","aksam":"20:30","yatsi":"22:16"},
+  "7-29":{"imsak":"03:57","sabah":"04:07","ogle":"13:20","ikindi":"17:11","aksam":"20:29","yatsi":"22:15"},
+  "7-30":{"imsak":"03:58","sabah":"04:08","ogle":"13:20","ikindi":"17:11","aksam":"20:28","yatsi":"22:13"},
+  "7-31":{"imsak":"04:00","sabah":"04:10","ogle":"13:20","ikindi":"17:11","aksam":"20:27","yatsi":"22:12"},
+  "8-1":{"imsak":"04:02","sabah":"04:12","ogle":"13:20","ikindi":"17:10","aksam":"20:26","yatsi":"22:10"},
+  "8-2":{"imsak":"04:03","sabah":"04:13","ogle":"13:20","ikindi":"17:10","aksam":"20:25","yatsi":"22:09"},
+  "8-3":{"imsak":"04:05","sabah":"04:15","ogle":"13:20","ikindi":"17:09","aksam":"20:24","yatsi":"22:07"},
+  "8-4":{"imsak":"04:06","sabah":"04:16","ogle":"13:19","ikindi":"17:09","aksam":"20:22","yatsi":"22:05"},
+  "8-5":{"imsak":"04:08","sabah":"04:18","ogle":"13:19","ikindi":"17:09","aksam":"20:21","yatsi":"22:04"},
+  "8-6":{"imsak":"04:09","sabah":"04:19","ogle":"13:19","ikindi":"17:08","aksam":"20:20","yatsi":"22:02"},
+  "8-7":{"imsak":"04:11","sabah":"04:21","ogle":"13:19","ikindi":"17:08","aksam":"20:19","yatsi":"22:00"},
+  "8-8":{"imsak":"04:12","sabah":"04:22","ogle":"13:19","ikindi":"17:07","aksam":"20:18","yatsi":"21:59"},
+  "8-9":{"imsak":"04:14","sabah":"04:24","ogle":"13:19","ikindi":"17:07","aksam":"20:16","yatsi":"21:57"},
+  "8-10":{"imsak":"04:15","sabah":"04:25","ogle":"13:19","ikindi":"17:06","aksam":"20:15","yatsi":"21:55"},
+  "8-11":{"imsak":"04:17","sabah":"04:27","ogle":"13:19","ikindi":"17:06","aksam":"20:14","yatsi":"21:53"},
+  "8-12":{"imsak":"04:18","sabah":"04:28","ogle":"13:18","ikindi":"17:05","aksam":"20:12","yatsi":"21:52"},
+  "8-13":{"imsak":"04:20","sabah":"04:30","ogle":"13:18","ikindi":"17:04","aksam":"20:11","yatsi":"21:50"},
+  "8-14":{"imsak":"04:21","sabah":"04:31","ogle":"13:18","ikindi":"17:04","aksam":"20:10","yatsi":"21:48"},
+  "8-15":{"imsak":"04:23","sabah":"04:33","ogle":"13:18","ikindi":"17:03","aksam":"20:08","yatsi":"21:46"},
+  "8-16":{"imsak":"04:24","sabah":"04:34","ogle":"13:18","ikindi":"17:03","aksam":"20:07","yatsi":"21:44"},
+  "8-17":{"imsak":"04:26","sabah":"04:36","ogle":"13:17","ikindi":"17:02","aksam":"20:06","yatsi":"21:43"},
+  "8-18":{"imsak":"04:27","sabah":"04:37","ogle":"13:17","ikindi":"17:01","aksam":"20:04","yatsi":"21:41"},
+  "8-19":{"imsak":"04:29","sabah":"04:39","ogle":"13:17","ikindi":"17:00","aksam":"20:03","yatsi":"21:39"},
+  "8-20":{"imsak":"04:30","sabah":"04:40","ogle":"13:17","ikindi":"17:00","aksam":"20:01","yatsi":"21:37"},
+  "8-21":{"imsak":"04:32","sabah":"04:42","ogle":"13:17","ikindi":"16:59","aksam":"20:00","yatsi":"21:35"},
+  "8-22":{"imsak":"04:33","sabah":"04:43","ogle":"13:16","ikindi":"16:58","aksam":"19:58","yatsi":"21:33"},
+  "8-23":{"imsak":"04:34","sabah":"04:44","ogle":"13:16","ikindi":"16:57","aksam":"19:57","yatsi":"21:31"},
+  "8-24":{"imsak":"04:36","sabah":"04:46","ogle":"13:16","ikindi":"16:57","aksam":"19:55","yatsi":"21:29"},
+  "8-25":{"imsak":"04:37","sabah":"04:47","ogle":"13:16","ikindi":"16:56","aksam":"19:54","yatsi":"21:27"},
+  "8-26":{"imsak":"04:39","sabah":"04:49","ogle":"13:15","ikindi":"16:55","aksam":"19:52","yatsi":"21:26"},
+  "8-27":{"imsak":"04:40","sabah":"04:50","ogle":"13:15","ikindi":"16:54","aksam":"19:50","yatsi":"21:24"},
+  "8-28":{"imsak":"04:41","sabah":"04:51","ogle":"13:15","ikindi":"16:53","aksam":"19:49","yatsi":"21:22"},
+  "8-29":{"imsak":"04:43","sabah":"04:53","ogle":"13:14","ikindi":"16:52","aksam":"19:47","yatsi":"21:20"},
+  "8-30":{"imsak":"04:44","sabah":"04:54","ogle":"13:14","ikindi":"16:52","aksam":"19:46","yatsi":"21:18"},
+  "8-31":{"imsak":"04:46","sabah":"04:56","ogle":"13:14","ikindi":"16:51","aksam":"19:44","yatsi":"21:16"},
+  "9-1":{"imsak":"04:47","sabah":"04:57","ogle":"13:13","ikindi":"16:50","aksam":"19:42","yatsi":"21:14"},
+  "9-2":{"imsak":"04:48","sabah":"04:58","ogle":"13:13","ikindi":"16:49","aksam":"19:41","yatsi":"21:12"},
+  "9-3":{"imsak":"04:50","sabah":"05:00","ogle":"13:13","ikindi":"16:48","aksam":"19:39","yatsi":"21:10"},
+  "9-4":{"imsak":"04:51","sabah":"05:01","ogle":"13:12","ikindi":"16:47","aksam":"19:38","yatsi":"21:08"},
+  "9-5":{"imsak":"04:52","sabah":"05:02","ogle":"13:12","ikindi":"16:46","aksam":"19:36","yatsi":"21:06"},
+  "9-6":{"imsak":"04:53","sabah":"05:03","ogle":"13:12","ikindi":"16:45","aksam":"19:34","yatsi":"21:04"},
+  "9-7":{"imsak":"04:55","sabah":"05:05","ogle":"13:11","ikindi":"16:44","aksam":"19:33","yatsi":"21:02"},
+  "9-8":{"imsak":"04:56","sabah":"05:06","ogle":"13:11","ikindi":"16:43","aksam":"19:31","yatsi":"21:00"},
+  "9-9":{"imsak":"04:57","sabah":"05:07","ogle":"13:11","ikindi":"16:42","aksam":"19:29","yatsi":"20:59"},
+  "9-10":{"imsak":"04:58","sabah":"05:08","ogle":"13:10","ikindi":"16:41","aksam":"19:27","yatsi":"20:57"},
+  "9-11":{"imsak":"05:00","sabah":"05:10","ogle":"13:10","ikindi":"16:40","aksam":"19:26","yatsi":"20:55"},
+  "9-12":{"imsak":"05:01","sabah":"05:11","ogle":"13:10","ikindi":"16:39","aksam":"19:24","yatsi":"20:53"},
+  "9-13":{"imsak":"05:02","sabah":"05:12","ogle":"13:09","ikindi":"16:37","aksam":"19:22","yatsi":"20:51"},
+  "9-14":{"imsak":"05:03","sabah":"05:13","ogle":"13:09","ikindi":"16:36","aksam":"19:21","yatsi":"20:49"},
+  "9-15":{"imsak":"05:05","sabah":"05:15","ogle":"13:09","ikindi":"16:35","aksam":"19:19","yatsi":"20:47"},
+  "9-16":{"imsak":"05:06","sabah":"05:16","ogle":"13:08","ikindi":"16:34","aksam":"19:17","yatsi":"20:45"},
+  "9-17":{"imsak":"05:07","sabah":"05:17","ogle":"13:08","ikindi":"16:33","aksam":"19:16","yatsi":"20:43"},
+  "9-18":{"imsak":"05:08","sabah":"05:18","ogle":"13:08","ikindi":"16:32","aksam":"19:14","yatsi":"20:41"},
+  "9-19":{"imsak":"05:09","sabah":"05:19","ogle":"13:07","ikindi":"16:31","aksam":"19:12","yatsi":"20:40"},
+  "9-20":{"imsak":"05:10","sabah":"05:20","ogle":"13:07","ikindi":"16:30","aksam":"19:10","yatsi":"20:38"},
+  "9-21":{"imsak":"05:12","sabah":"05:22","ogle":"13:07","ikindi":"16:28","aksam":"19:09","yatsi":"20:36"},
+  "9-22":{"imsak":"05:13","sabah":"05:23","ogle":"13:06","ikindi":"16:27","aksam":"19:07","yatsi":"20:34"},
+  "9-23":{"imsak":"05:14","sabah":"05:24","ogle":"13:06","ikindi":"16:26","aksam":"19:05","yatsi":"20:32"},
+  "9-24":{"imsak":"05:15","sabah":"05:25","ogle":"13:05","ikindi":"16:25","aksam":"19:04","yatsi":"20:30"},
+  "9-25":{"imsak":"05:16","sabah":"05:26","ogle":"13:05","ikindi":"16:24","aksam":"19:02","yatsi":"20:29"},
+  "9-26":{"imsak":"05:17","sabah":"05:27","ogle":"13:05","ikindi":"16:22","aksam":"19:00","yatsi":"20:27"},
+  "9-27":{"imsak":"05:18","sabah":"05:28","ogle":"13:04","ikindi":"16:21","aksam":"18:58","yatsi":"20:25"},
+  "9-28":{"imsak":"05:20","sabah":"05:30","ogle":"13:04","ikindi":"16:20","aksam":"18:57","yatsi":"20:23"},
+  "9-29":{"imsak":"05:21","sabah":"05:31","ogle":"13:04","ikindi":"16:19","aksam":"18:55","yatsi":"20:21"},
+  "9-30":{"imsak":"05:22","sabah":"05:32","ogle":"13:03","ikindi":"16:18","aksam":"18:53","yatsi":"20:20"},
+  "10-1":{"imsak":"05:23","sabah":"05:33","ogle":"13:03","ikindi":"16:16","aksam":"18:52","yatsi":"20:18"},
+  "10-2":{"imsak":"05:24","sabah":"05:34","ogle":"13:03","ikindi":"16:15","aksam":"18:50","yatsi":"20:16"},
+  "10-3":{"imsak":"05:25","sabah":"05:35","ogle":"13:02","ikindi":"16:14","aksam":"18:48","yatsi":"20:15"},
+  "10-4":{"imsak":"05:26","sabah":"05:36","ogle":"13:02","ikindi":"16:13","aksam":"18:47","yatsi":"20:13"},
+  "10-5":{"imsak":"05:27","sabah":"05:37","ogle":"13:02","ikindi":"16:12","aksam":"18:45","yatsi":"20:11"},
+  "10-6":{"imsak":"05:28","sabah":"05:38","ogle":"13:02","ikindi":"16:10","aksam":"18:43","yatsi":"20:09"},
+  "10-7":{"imsak":"05:29","sabah":"05:39","ogle":"13:01","ikindi":"16:09","aksam":"18:42","yatsi":"20:08"},
+  "10-8":{"imsak":"05:30","sabah":"05:40","ogle":"13:01","ikindi":"16:08","aksam":"18:40","yatsi":"20:06"},
+  "10-9":{"imsak":"05:31","sabah":"05:41","ogle":"13:01","ikindi":"16:07","aksam":"18:38","yatsi":"20:05"},
+  "10-10":{"imsak":"05:33","sabah":"05:43","ogle":"13:00","ikindi":"16:05","aksam":"18:37","yatsi":"20:03"},
+  "10-11":{"imsak":"05:34","sabah":"05:44","ogle":"13:00","ikindi":"16:04","aksam":"18:35","yatsi":"20:01"},
+  "10-12":{"imsak":"05:35","sabah":"05:45","ogle":"13:00","ikindi":"16:03","aksam":"18:34","yatsi":"20:00"},
+  "10-13":{"imsak":"05:36","sabah":"05:46","ogle":"13:00","ikindi":"16:02","aksam":"18:32","yatsi":"19:58"},
+  "10-14":{"imsak":"05:37","sabah":"05:47","ogle":"12:59","ikindi":"16:01","aksam":"18:30","yatsi":"19:57"},
+  "10-15":{"imsak":"05:38","sabah":"05:48","ogle":"12:59","ikindi":"15:59","aksam":"18:29","yatsi":"19:55"},
+  "10-16":{"imsak":"05:39","sabah":"05:49","ogle":"12:59","ikindi":"15:58","aksam":"18:27","yatsi":"19:54"},
+  "10-17":{"imsak":"05:40","sabah":"05:50","ogle":"12:59","ikindi":"15:57","aksam":"18:26","yatsi":"19:52"},
+  "10-18":{"imsak":"05:41","sabah":"05:51","ogle":"12:59","ikindi":"15:56","aksam":"18:24","yatsi":"19:51"},
+  "10-19":{"imsak":"05:42","sabah":"05:52","ogle":"12:58","ikindi":"15:55","aksam":"18:23","yatsi":"19:49"},
+  "10-20":{"imsak":"05:43","sabah":"05:53","ogle":"12:58","ikindi":"15:54","aksam":"18:21","yatsi":"19:48"},
+  "10-21":{"imsak":"05:44","sabah":"05:54","ogle":"12:58","ikindi":"15:52","aksam":"18:20","yatsi":"19:46"},
+  "10-22":{"imsak":"05:45","sabah":"05:55","ogle":"12:58","ikindi":"15:51","aksam":"18:18","yatsi":"19:45"},
+  "10-23":{"imsak":"05:46","sabah":"05:56","ogle":"12:58","ikindi":"15:50","aksam":"18:17","yatsi":"19:44"},
+  "10-24":{"imsak":"05:47","sabah":"05:57","ogle":"12:58","ikindi":"15:49","aksam":"18:15","yatsi":"19:42"},
+  "10-25":{"imsak":"05:48","sabah":"05:58","ogle":"12:57","ikindi":"15:48","aksam":"18:14","yatsi":"19:41"},
+  "10-26":{"imsak":"05:49","sabah":"05:59","ogle":"12:57","ikindi":"15:47","aksam":"18:13","yatsi":"19:40"},
+  "10-27":{"imsak":"05:51","sabah":"06:01","ogle":"12:57","ikindi":"15:46","aksam":"18:11","yatsi":"19:39"},
+  "10-28":{"imsak":"05:52","sabah":"06:02","ogle":"12:57","ikindi":"15:45","aksam":"18:10","yatsi":"19:37"},
+  "10-29":{"imsak":"05:53","sabah":"06:03","ogle":"12:57","ikindi":"15:44","aksam":"18:09","yatsi":"19:36"},
+  "10-30":{"imsak":"05:54","sabah":"06:04","ogle":"12:57","ikindi":"15:43","aksam":"18:07","yatsi":"19:35"},
+  "10-31":{"imsak":"05:55","sabah":"06:05","ogle":"12:57","ikindi":"15:42","aksam":"18:06","yatsi":"19:34"},
+  "11-1":{"imsak":"05:56","sabah":"06:06","ogle":"12:57","ikindi":"15:41","aksam":"18:05","yatsi":"19:33"},
+  "11-2":{"imsak":"05:57","sabah":"06:07","ogle":"12:57","ikindi":"15:40","aksam":"18:04","yatsi":"19:32"},
+  "11-3":{"imsak":"05:58","sabah":"06:08","ogle":"12:57","ikindi":"15:39","aksam":"18:02","yatsi":"19:31"},
+  "11-4":{"imsak":"05:59","sabah":"06:09","ogle":"12:57","ikindi":"15:38","aksam":"18:01","yatsi":"19:29"},
+  "11-5":{"imsak":"06:00","sabah":"06:10","ogle":"12:57","ikindi":"15:37","aksam":"18:00","yatsi":"19:28"},
+  "11-6":{"imsak":"06:01","sabah":"06:11","ogle":"12:57","ikindi":"15:36","aksam":"17:59","yatsi":"19:27"},
+  "11-7":{"imsak":"06:02","sabah":"06:12","ogle":"12:57","ikindi":"15:35","aksam":"17:58","yatsi":"19:27"},
+  "11-8":{"imsak":"06:03","sabah":"06:13","ogle":"12:57","ikindi":"15:34","aksam":"17:57","yatsi":"19:26"},
+  "11-9":{"imsak":"06:04","sabah":"06:14","ogle":"12:57","ikindi":"15:33","aksam":"17:56","yatsi":"19:25"},
+  "11-10":{"imsak":"06:05","sabah":"06:15","ogle":"12:57","ikindi":"15:33","aksam":"17:55","yatsi":"19:24"},
+  "11-11":{"imsak":"06:06","sabah":"06:16","ogle":"12:57","ikindi":"15:32","aksam":"17:54","yatsi":"19:23"},
+  "11-12":{"imsak":"06:07","sabah":"06:17","ogle":"12:57","ikindi":"15:31","aksam":"17:53","yatsi":"19:22"},
+  "11-13":{"imsak":"06:08","sabah":"06:18","ogle":"12:57","ikindi":"15:30","aksam":"17:52","yatsi":"19:21"},
+  "11-14":{"imsak":"06:09","sabah":"06:19","ogle":"12:58","ikindi":"15:30","aksam":"17:51","yatsi":"19:21"},
+  "11-15":{"imsak":"06:10","sabah":"06:20","ogle":"12:58","ikindi":"15:29","aksam":"17:50","yatsi":"19:20"},
+  "11-16":{"imsak":"06:11","sabah":"06:21","ogle":"12:58","ikindi":"15:28","aksam":"17:49","yatsi":"19:19"},
+  "11-17":{"imsak":"06:12","sabah":"06:22","ogle":"12:58","ikindi":"15:28","aksam":"17:48","yatsi":"19:19"},
+  "11-18":{"imsak":"06:13","sabah":"06:23","ogle":"12:58","ikindi":"15:27","aksam":"17:47","yatsi":"19:18"},
+  "11-19":{"imsak":"06:14","sabah":"06:24","ogle":"12:59","ikindi":"15:26","aksam":"17:47","yatsi":"19:17"},
+  "11-20":{"imsak":"06:15","sabah":"06:25","ogle":"12:59","ikindi":"15:26","aksam":"17:46","yatsi":"19:17"},
+  "11-21":{"imsak":"06:16","sabah":"06:26","ogle":"12:59","ikindi":"15:25","aksam":"17:45","yatsi":"19:16"},
+  "11-22":{"imsak":"06:17","sabah":"06:27","ogle":"12:59","ikindi":"15:25","aksam":"17:45","yatsi":"19:16"},
+  "11-23":{"imsak":"06:18","sabah":"06:28","ogle":"13:00","ikindi":"15:24","aksam":"17:44","yatsi":"19:15"},
+  "11-24":{"imsak":"06:19","sabah":"06:29","ogle":"13:00","ikindi":"15:24","aksam":"17:43","yatsi":"19:15"},
+  "11-25":{"imsak":"06:20","sabah":"06:30","ogle":"13:00","ikindi":"15:24","aksam":"17:43","yatsi":"19:15"},
+  "11-26":{"imsak":"06:21","sabah":"06:31","ogle":"13:00","ikindi":"15:23","aksam":"17:42","yatsi":"19:14"},
+  "11-27":{"imsak":"06:22","sabah":"06:32","ogle":"13:01","ikindi":"15:23","aksam":"17:42","yatsi":"19:14"},
+  "11-28":{"imsak":"06:23","sabah":"06:33","ogle":"13:01","ikindi":"15:23","aksam":"17:42","yatsi":"19:14"},
+  "11-29":{"imsak":"06:24","sabah":"06:34","ogle":"13:01","ikindi":"15:22","aksam":"17:41","yatsi":"19:13"},
+  "11-30":{"imsak":"06:25","sabah":"06:35","ogle":"13:02","ikindi":"15:22","aksam":"17:41","yatsi":"19:13"},
+  "12-1":{"imsak":"06:26","sabah":"06:36","ogle":"13:02","ikindi":"15:22","aksam":"17:40","yatsi":"19:13"},
+  "12-2":{"imsak":"06:27","sabah":"06:37","ogle":"13:02","ikindi":"15:22","aksam":"17:40","yatsi":"19:13"},
+  "12-3":{"imsak":"06:28","sabah":"06:38","ogle":"13:03","ikindi":"15:21","aksam":"17:40","yatsi":"19:13"},
+  "12-4":{"imsak":"06:28","sabah":"06:38","ogle":"13:03","ikindi":"15:21","aksam":"17:40","yatsi":"19:13"},
+  "12-5":{"imsak":"06:29","sabah":"06:39","ogle":"13:04","ikindi":"15:21","aksam":"17:40","yatsi":"19:13"},
+  "12-6":{"imsak":"06:30","sabah":"06:40","ogle":"13:04","ikindi":"15:21","aksam":"17:39","yatsi":"19:13"},
+  "12-7":{"imsak":"06:31","sabah":"06:41","ogle":"13:05","ikindi":"15:21","aksam":"17:39","yatsi":"19:13"},
+  "12-8":{"imsak":"06:32","sabah":"06:42","ogle":"13:05","ikindi":"15:21","aksam":"17:39","yatsi":"19:13"},
+  "12-9":{"imsak":"06:33","sabah":"06:43","ogle":"13:05","ikindi":"15:21","aksam":"17:39","yatsi":"19:13"},
+  "12-10":{"imsak":"06:33","sabah":"06:43","ogle":"13:06","ikindi":"15:21","aksam":"17:39","yatsi":"19:13"},
+  "12-11":{"imsak":"06:34","sabah":"06:44","ogle":"13:06","ikindi":"15:22","aksam":"17:39","yatsi":"19:13"},
+  "12-12":{"imsak":"06:35","sabah":"06:45","ogle":"13:07","ikindi":"15:22","aksam":"17:40","yatsi":"19:13"},
+  "12-13":{"imsak":"06:35","sabah":"06:45","ogle":"13:07","ikindi":"15:22","aksam":"17:40","yatsi":"19:13"},
+  "12-14":{"imsak":"06:36","sabah":"06:46","ogle":"13:08","ikindi":"15:22","aksam":"17:40","yatsi":"19:14"},
+  "12-15":{"imsak":"06:37","sabah":"06:47","ogle":"13:08","ikindi":"15:22","aksam":"17:40","yatsi":"19:14"},
+  "12-16":{"imsak":"06:38","sabah":"06:48","ogle":"13:09","ikindi":"15:23","aksam":"17:40","yatsi":"19:14"},
+  "12-17":{"imsak":"06:38","sabah":"06:48","ogle":"13:09","ikindi":"15:23","aksam":"17:41","yatsi":"19:15"},
+  "12-18":{"imsak":"06:39","sabah":"06:49","ogle":"13:10","ikindi":"15:23","aksam":"17:41","yatsi":"19:15"},
+  "12-19":{"imsak":"06:39","sabah":"06:49","ogle":"13:10","ikindi":"15:24","aksam":"17:41","yatsi":"19:15"},
+  "12-20":{"imsak":"06:40","sabah":"06:50","ogle":"13:11","ikindi":"15:24","aksam":"17:42","yatsi":"19:16"},
+  "12-21":{"imsak":"06:40","sabah":"06:50","ogle":"13:11","ikindi":"15:25","aksam":"17:42","yatsi":"19:16"},
+  "12-22":{"imsak":"06:41","sabah":"06:51","ogle":"13:12","ikindi":"15:25","aksam":"17:43","yatsi":"19:17"},
+  "12-23":{"imsak":"06:41","sabah":"06:51","ogle":"13:12","ikindi":"15:26","aksam":"17:43","yatsi":"19:17"},
+  "12-24":{"imsak":"06:42","sabah":"06:52","ogle":"13:13","ikindi":"15:26","aksam":"17:44","yatsi":"19:18"},
+  "12-25":{"imsak":"06:42","sabah":"06:52","ogle":"13:13","ikindi":"15:27","aksam":"17:44","yatsi":"19:18"},
+  "12-26":{"imsak":"06:43","sabah":"06:53","ogle":"13:14","ikindi":"15:27","aksam":"17:45","yatsi":"19:19"},
+  "12-27":{"imsak":"06:43","sabah":"06:53","ogle":"13:14","ikindi":"15:28","aksam":"17:46","yatsi":"19:20"},
+  "12-28":{"imsak":"06:43","sabah":"06:53","ogle":"13:15","ikindi":"15:29","aksam":"17:46","yatsi":"19:20"},
+  "12-29":{"imsak":"06:44","sabah":"06:54","ogle":"13:15","ikindi":"15:29","aksam":"17:47","yatsi":"19:21"},
+  "12-30":{"imsak":"06:44","sabah":"06:54","ogle":"13:16","ikindi":"15:30","aksam":"17:48","yatsi":"19:22"},
+  "12-31":{"imsak":"06:44","sabah":"06:54","ogle":"13:16","ikindi":"15:31","aksam":"17:49","yatsi":"19:22"},
+};
+
+// ======= STATE =======
+let schedule = JSON.parse(localStorage.getItem('ds_sched')||'null') || [];
+let completed = new Set(JSON.parse(localStorage.getItem('ds_comp')||'[]'));
+let books = JSON.parse(localStorage.getItem('ds_books')||'[]');
+let editingId = null;
+let editingBookId = null;
+let activeTab = 'program';
+let lastDK = '';
+
+// ======= HELPERS =======
+function todayKey(){const n=new Date();return`${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`;}
+function t2m(t){if(!t)return 9999;const[h,m]=t.split(':').map(Number);return h*60+m;}
+function m2s(m){if(m<=0)return'—';const h=Math.floor(m/60),min=m%60;return h>0?`${h}s ${min}dk`:`${min}dk`;}
+function sortSched(){schedule.sort((a,b)=>t2m(a.time)-t2m(b.time));}
+function saveSched(){localStorage.setItem('ds_sched',JSON.stringify(schedule));}
+function saveComp(){localStorage.setItem('ds_comp',JSON.stringify([...completed]));}
+function toggleNamaz(key){
+  let nc=JSON.parse(localStorage.getItem('ds_namaz_comp')||'{}');
+  const ndk=todayKey();
+  if(nc._dk!==ndk){nc={_dk:ndk};}
+  nc[key]=!nc[key];
+  localStorage.setItem('ds_namaz_comp',JSON.stringify(nc));
+  render();
+}
+function saveBooks(){localStorage.setItem('ds_books',JSON.stringify(books));}
+
+// ======= PRAYER TIMES =======
+function getTodayPrayer(){
+  const saved=localStorage.getItem('ds_prayer_custom');
+  if(saved){const d=JSON.parse(saved);if(d.date===new Date().toDateString())return d;}
+  const n=new Date();
+  const key=`${n.getMonth()+1}-${n.getDate()}`;
+  return CORLU_2026[key]||{imsak:'06:03',sabah:'06:23',ogle:'13:25',ikindi:'16:37',aksam:'19:13',yatsi:'20:32'};
+}
+
+let NAMAZ_V=(function(){
+  const t=getTodayPrayer();
+  return[
+    {name:'İmsak',time:t.imsak,key:'imsak'},
+    {name:'Sabah',time:t.sabah,key:'sabah'},
+    {name:'Öğle',time:t.ogle,key:'ogle'},
+    {name:'İkindi',time:t.ikindi,key:'ikindi'},
+    {name:'Akşam',time:t.aksam,key:'aksam'},
+    {name:'Yatsı',time:t.yatsi,key:'yatsi'},
+  ];
+})();
+
+const EXTRA_NAMAZ=[
+  {name:'Teheccüt',key:'teheccud',time:'04:00',nafile:true},
+  {name:'Kuşluk',key:'kusluk',time:'09:00',nafile:true},
+];
+const ALL_NAMAZ=()=>[...NAMAZ_V,...EXTRA_NAMAZ];
+
+// ======= STREAK =======
+function getStreak(){return JSON.parse(localStorage.getItem('ds_streak')||'{"cur":0,"best":0,"lastDate":""}');}
+function saveStreak(s){localStorage.setItem('ds_streak',JSON.stringify(s));}
+
+function updateStreak(){
+  const today=todayKey();
+  const s=getStreak();
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const yk=`${yesterday.getFullYear()}-${yesterday.getMonth()}-${yesterday.getDate()}`;
+  // Check 5 vakit namaz
+  const nc=JSON.parse(localStorage.getItem('ds_namaz_comp')||'{}');
+  const namazDone=NAMAZ_V.filter(n=>!!nc[n.key]).length;
+  const namazOK=namazDone>=5;
+  // Check minimum 5 görev
+  const taskOK=completed.size>=5;
+  if(namazOK&&taskOK&&s.lastDate!==today){
+    if(s.lastDate===yk)s.cur++;
+    else s.cur=1;
+    s.lastDate=today;
+    if(s.cur>s.best)s.best=s.cur;
+    saveStreak(s);
+  }
+  return s;
+}
+
+// ======= POMODORO =======
+const POMO_WORK=25*60, POMO_BREAK=5*60, POMO_LONG=15*60;
+let pomoState={running:false,mode:'work',time:POMO_WORK,session:1,interval:null};
+
+function togglePomo(){
+  if(pomoState.running){
+    clearInterval(pomoState.interval);
+    pomoState.running=false;
+    document.getElementById('pomo-start-btn').textContent='▶ Devam';
+  } else {
+    pomoState.running=true;
+    document.getElementById('pomo-start-btn').textContent='⏸ Durdur';
+    pomoState.interval=setInterval(tickPomo,1000);
+  }
+}
+
+function tickPomo(){
+  pomoState.time--;
+  updatePomoDisplay();
+  if(pomoState.time<=0){
+    clearInterval(pomoState.interval);
+    pomoState.running=false;
+    if(pomoState.mode==='work'){
+      pomoState.session++;
+      pomoState.mode=pomoState.session%4===0?'long':'break';
+      pomoState.time=pomoState.session%4===0?POMO_LONG:POMO_BREAK;
+      if(Notification.permission==='granted') new Notification('🍅 Mola zamanı!',{body:'25dk odak tamamlandı. Mola ver!'});
+    } else {
+      pomoState.mode='work';pomoState.time=POMO_WORK;
+      if(Notification.permission==='granted') new Notification('🌍 Odak zamanı!',{body:'Mola bitti. Haydi!'});
+    }
+    document.getElementById('pomo-start-btn').textContent='▶ Başla';
+    updatePomoDisplay();
+  }
+}
+
+function resetPomo(){
+  clearInterval(pomoState.interval);
+  pomoState={running:false,mode:'work',time:POMO_WORK,session:1,interval:null};
+  document.getElementById('pomo-start-btn').textContent='▶ Başla';
+  updatePomoDisplay();
+}
+
+function skipPomo(){
+  clearInterval(pomoState.interval);
+  pomoState.running=false;
+  if(pomoState.mode==='work'){pomoState.mode='break';pomoState.time=POMO_BREAK;}
+  else{pomoState.mode='work';pomoState.time=POMO_WORK;}
+  document.getElementById('pomo-start-btn').textContent='▶ Başla';
+  updatePomoDisplay();
+}
+
+function updatePomoDisplay(){
+  const m=Math.floor(pomoState.time/60),s=pomoState.time%60;
+  document.getElementById('pomo-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const total=pomoState.mode==='work'?POMO_WORK:pomoState.mode==='break'?POMO_BREAK:POMO_LONG;
+  const pct=pomoState.time/total;
+  const circ=2*Math.PI*45;
+  document.getElementById('pomo-ring').style.strokeDashoffset=circ*(1-pct);
+  const modes={work:'ODAK',break:'KISA MOLA',long:'UZUN MOLA'};
+  document.getElementById('pomo-mode-lbl').textContent=modes[pomoState.mode]||'ODAK';
+  document.getElementById('pomo-session').textContent=`Oturum ${pomoState.session} • ${pomoState.mode==='work'?'25dk Odak':pomoState.mode==='break'?'5dk Mola':'15dk Uzun Mola'}`;
+}
+
+// Request notifications
+if(Notification&&Notification.permission==='default') Notification.requestPermission();
+
+// ======= TABS =======
+const TAB_IDS=['program','quran','books','spor','stats','f1','review'];
+function switchTab(t){
+  activeTab=t;
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('tab-'+t);
+  if(panel)panel.classList.add('active');
+  TAB_IDS.forEach(id=>{
+    const btn=document.getElementById('nav-'+id);
+    if(btn)btn.classList.toggle('active',id===t);
+  });
+  if(t==='f1')renderF1();
+  if(t==='quran')renderQuran();
+  if(t==='books')renderBooks();
+  if(t==='stats')renderStats();
+  if(t==='spor')renderWorkouts();
+}
+
+// ======= MODAL =======
+const CAT_LBL={ders:'Ders',namaz:'Namaz',spor:'Spor',muzik:'Müzik',ibadet:'İbadet',yemek:'Yemek',uyku:'Uyku',diger:'Diğer'};
+function openModal(id=null){
+  editingId=id;
+  document.getElementById('modal-title').textContent=id!==null?'Düzenle':'Aktivite Ekle';
+  if(id!==null){const item=schedule.find(s=>s.id===id);if(item){document.getElementById('f-time').value=item.time||'';document.getElementById('f-name').value=item.name;document.getElementById('f-cat').value=item.cat;document.getElementById('f-note').value=item.note||'';}}
+  else{document.getElementById('f-time').value='';document.getElementById('f-name').value='';document.getElementById('f-cat').value='diger';document.getElementById('f-note').value='';}
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');editingId=null;}
+function closeModalOut(e){if(e.target===document.getElementById('modal'))closeModal();}
+function saveItem(){
+  const time=document.getElementById('f-time').value,name=document.getElementById('f-name').value.trim(),cat=document.getElementById('f-cat').value,note=document.getElementById('f-note').value.trim();
+  if(!name)return;
+  if(editingId!==null){const idx=schedule.findIndex(s=>s.id===editingId);if(idx>=0)schedule[idx]={...schedule[idx],time,name,cat,note};}
+  else schedule.push({time,name,cat,note,id:Date.now()});
+  sortSched();saveSched();closeModal();render();
+}
+function deleteItem(id){schedule=schedule.filter(s=>s.id!==id);completed.delete(id);saveSched();saveComp();render();}
+function completeItem(id){if(completed.has(id))completed.delete(id);else completed.add(id);saveComp();updateStreak();render();}
+function completeCurrent(){
+  const nm=new Date().getHours()*60+new Date().getMinutes();
+  let ci=-1;for(let j=0;j<schedule.length;j++){if(t2m(schedule[j].time)<=nm)ci=j;else break;}
+  if(ci>=0)completeItem(schedule[ci].id);
+}
+
+// ======= PRAYER MODAL =======
+function openPrayerModal(){
+  const t=getTodayPrayer();
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val;};
+  set('p-imsak',t.imsak);set('p-sabah',t.sabah);set('p-ogle',t.ogle);
+  set('p-ikindi',t.ikindi);set('p-aksam',t.aksam);set('p-yatsi',t.yatsi);
+  const m=document.getElementById('prayer-modal');if(m)m.classList.add('open');
+}
+function closePrayerModal(){const m=document.getElementById('prayer-modal');if(m)m.classList.remove('open');}
+function closePrayerModalOut(e){if(e.target===document.getElementById('prayer-modal'))closePrayerModal();}
+function savePrayerTimes(){
+  const get=id=>document.getElementById(id).value;
+  const times={imsak:get('p-imsak'),sabah:get('p-sabah'),ogle:get('p-ogle'),ikindi:get('p-ikindi'),aksam:get('p-aksam'),yatsi:get('p-yatsi'),date:new Date().toDateString()};
+  localStorage.setItem('ds_prayer_custom',JSON.stringify(times));
+  NAMAZ_V=[{name:'İmsak',time:times.imsak,key:'imsak'},{name:'Sabah',time:times.sabah,key:'sabah'},{name:'Öğle',time:times.ogle,key:'ogle'},{name:'İkindi',time:times.ikindi,key:'ikindi'},{name:'Akşam',time:times.aksam,key:'aksam'},{name:'Yatsı',time:times.yatsi,key:'yatsi'}];
+  closePrayerModal();render();
+}
+
+// ======= QURAN =======
+function getQuran(){return JSON.parse(localStorage.getItem('ds_quran')||'{"page":1,"history":{}}');}
+function saveQuran(q){localStorage.setItem('ds_quran',JSON.stringify(q));}
+function getCuz(p){return Math.min(30,Math.ceil(p/20));}
+
+function addQuranPages(d){
+  const q=getQuran();
+  q.page=Math.max(1,Math.min(604,q.page+d));
+  const today=new Date().toISOString().split('T')[0];
+  q.history[today]=(q.history[today]||0)+Math.max(0,d);
+  saveQuran(q);renderQuran();
+}
+function setQuranPage(){
+  const val=parseInt(document.getElementById('q-input').value);
+  if(!isNaN(val)&&val>=1&&val<=604){
+    const q=getQuran();
+    const delta=val-q.page;
+    q.page=val;
+    const today=new Date().toISOString().split('T')[0];
+    if(delta>0)q.history[today]=(q.history[today]||0)+delta;
+    saveQuran(q);renderQuran();
+    document.getElementById('q-input').value='';
+  }
+}
+function renderQuran(){
+  const q=getQuran();
+  const el=n=>document.getElementById(n);
+  if(el('q-cur-page'))el('q-cur-page').textContent=q.page;
+  if(el('q-cuz-info'))el('q-cuz-info').textContent=getCuz(q.page)+'. Cüz • '+Math.round(q.page/604*100)+'%';
+  if(el('q-fill'))el('q-fill').style.width=(q.page/604*100)+'%';
+  if(!el('q-week'))return;
+  const days=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+  const now=new Date();
+  const dayOfWeek=(now.getDay()+6)%7;
+  el('q-week').innerHTML=Array.from({length:7},(_,i)=>{
+    const d=new Date(now);d.setDate(now.getDate()-dayOfWeek+i);
+    const key=d.toISOString().split('T')[0];
+    const isToday=i===dayOfWeek;
+    const pages=q.history[key]||0;
+    return`<div class="q-day${isToday?' today':''}"><div class="q-day-lbl">${days[i]}</div><div class="q-day-val">${pages}</div></div>`;
+  }).join('');
+}
+
+// ======= BOOKS =======
+function openBookModal(id=null){
+  editingBookId=id;
+  document.getElementById('book-modal-title').textContent=id?'Kitabı Düzenle':'Kitap Ekle';
+  if(id){const b=books.find(x=>x.id===id);if(b){document.getElementById('b-name').value=b.name;document.getElementById('b-total').value=b.total;document.getElementById('b-daily').value=b.dailyGoal;}}
+  else{document.getElementById('b-name').value='';document.getElementById('b-total').value='';document.getElementById('b-daily').value='';}
+  document.getElementById('book-modal').classList.add('open');
+}
+function closeBookModal(){document.getElementById('book-modal').classList.remove('open');}
+function closeBookModalOut(e){if(e.target===document.getElementById('book-modal'))closeBookModal();}
+function saveBook(){
+  const name=document.getElementById('b-name').value.trim(),total=parseInt(document.getElementById('b-total').value)||0,dailyGoal=parseInt(document.getElementById('b-daily').value)||10;
+  if(!name||!total)return;
+  if(editingBookId){const idx=books.findIndex(x=>x.id===editingBookId);if(idx>=0)books[idx]={...books[idx],name,total,dailyGoal};}
+  else books.push({id:Date.now(),name,total,dailyGoal,currentPage:0,history:{}});
+  saveBooks();closeBookModal();renderBooks();
+}
+function deleteBook(id){books=books.filter(x=>x.id!==id);saveBooks();renderBooks();}
+function addBookPages(id,d){
+  const b=books.find(x=>x.id===id);if(!b)return;
+  b.currentPage=Math.max(0,Math.min(b.total,b.currentPage+d));
+  const today=new Date().toISOString().split('T')[0];
+  if(d>0)b.history[today]=(b.history[today]||0)+d;
+  saveBooks();renderBooks();
+}
+function setBookPage(id){
+  const b=books.find(x=>x.id===id);if(!b)return;
+  const val=parseInt(prompt(`"${b.name}" - Kaçıncı sayfadasın? (Şu an: ${b.currentPage})`));
+  if(!isNaN(val)&&val>=0&&val<=b.total){
+    const delta=val-b.currentPage;b.currentPage=val;
+    const today=new Date().toISOString().split('T')[0];
+    if(delta>0)b.history[today]=(b.history[today]||0)+delta;
+    saveBooks();renderBooks();
+  }
+}
+function renderBooks(){
+  const el=document.getElementById('book-list');if(!el)return;
+  if(books.length===0){
+    el.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:10px">📚</div><div style="font-family:'Syne',sans-serif;font-weight:800">Henüz kitap yok</div><div style="font-size:0.8rem;margin-top:6px">+ Ekle butonuna bas</div></div>`;
+    return;
+  }
+  const today=new Date().toISOString().split('T')[0];
+  el.innerHTML=books.map(b=>{
+    const pct=b.total>0?Math.round(b.currentPage/b.total*100):0;
+    const todayP=(b.history[today]||0);
+    const goalMet=todayP>=b.dailyGoal;
+    const rem=b.total-b.currentPage;
+    const daysLeft=b.dailyGoal>0?Math.ceil(rem/b.dailyGoal):'?';
+    return`<div class="glass book-item">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div><div class="book-name">${b.name}</div><div class="book-meta">${b.currentPage}/${b.total} sayfa • ~${daysLeft} gün kaldı</div></div>
+        <div style="display:flex;gap:4px"><button class="icon-btn" onclick="openBookModal(${b.id})">✏️</button><button class="icon-btn del" onclick="deleteBook(${b.id})">🗑️</button></div>
+      </div>
+      <div class="prog-track" style="margin-bottom:8px"><div class="prog-fill" style="width:${pct}%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:0.72rem;color:${goalMet?'var(--green)':'var(--muted)'}">
+          ${goalMet?'✓':'○'} Bugün: ${todayP}/${b.dailyGoal} sayfa
+        </div>
+        <div class="book-btns">
+          <button class="book-btn" onclick="addBookPages(${b.id},-1)">−</button>
+          <button class="book-btn p" onclick="addBookPages(${b.id},1)">+1</button>
+          <button class="book-btn p" onclick="addBookPages(${b.id},5)">+5</button>
+          <button class="book-btn" onclick="setBookPage(${b.id})" style="font-size:0.68rem">Sayfa</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ======= STATS =======
+function renderStats(){
+  const q=getQuran();
+  const s=getStreak();
+  const grid=document.getElementById('stats-grid');
+  if(!grid)return;
+  const now=new Date();
+  const weekStart=new Date(now);weekStart.setDate(now.getDate()-((now.getDay()+6)%7));
+  let weekNamez=0,weekQuran=0,weekComp=0,weekTotal=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
+    const key=d.toISOString().split('T')[0];
+    weekQuran+=(q.history[key]||0);
+  }
+  const weekHistory=JSON.parse(localStorage.getItem('ds_week_history')||'{}');
+  grid.innerHTML=`
+    <div class="stat-box"><div class="stat-box-val">${s.cur}🔥</div><div class="stat-box-lbl">Günlük Seri</div></div>
+    <div class="stat-box"><div class="stat-box-val">${s.best}</div><div class="stat-box-lbl">En İyi Seri</div></div>
+    <div class="stat-box"><div class="stat-box-val">${weekQuran}</div><div class="stat-box-lbl">Haftalık Kuran Sayfa</div></div>
+    <div class="stat-box"><div class="stat-box-val">${books.length}</div><div class="stat-box-lbl">Aktif Kitap</div></div>
+  `;
+  const bars=document.getElementById('week-bars');
+  if(!bars)return;
+  const days=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+  const dayOfWeek=(now.getDay()+6)%7;
+  const maxVal=Math.max(1,...Array.from({length:7},(_,i)=>{
+    const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
+    return weekHistory[d.toISOString().split('T')[0]]||0;
+  }));
+  bars.innerHTML=Array.from({length:7},(_,i)=>{
+    const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
+    const key=d.toISOString().split('T')[0];
+    const val=weekHistory[key]||0;
+    const h=Math.round((val/maxVal)*50)||0;
+    const isToday=i===dayOfWeek;
+    return`<div class="week-bar-col ${isToday?'week-bar-today':''}">
+      <div class="week-bar" style="height:${h}px"></div>
+      <div class="week-bar-day">${days[i]}</div>
+    </div>`;
+  }).join('');
+  const habits=document.getElementById('habit-stats');
+  if(!habits)return;
+  const namazDone=JSON.parse(localStorage.getItem('ds_namaz_comp')||'{}');
+  habits.innerHTML=`
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border)">
+      <span style="font-size:0.85rem">🕌 Bugün Namaz</span>
+      <span style="font-weight:700;color:var(--accent)">${Object.keys(namazDone).filter(k=>k!=='_dk').filter(k=>namazDone[k]).length}/5</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border)">
+      <span style="font-size:0.85rem">📖 Bugün Kuran</span>
+      <span style="font-weight:700;color:var(--accent)">${q.history[now.toISOString().split('T')[0]]||0} sayfa</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0">
+      <span style="font-size:0.85rem">✅ Bugün Görev</span>
+      <span style="font-weight:700;color:var(--accent)">${completed.size}/${schedule.length}</span>
+    </div>
+  `;
+}
+
+// ======= REVIEW =======
+function loadReview(){
+  const dk=todayKey();
+  const r=JSON.parse(localStorage.getItem('ds_review_'+dk)||'{"stars":0,"note":""}');
+  const stars=document.querySelectorAll('.star');
+  stars.forEach((s,i)=>s.classList.toggle('lit',i<r.stars));
+  const ta=document.getElementById('review-ta');if(ta)ta.value=r.note||'';
+}
+function setStar(v){
+  const dk=todayKey();
+  const r=JSON.parse(localStorage.getItem('ds_review_'+dk)||'{}');
+  r.stars=v;localStorage.setItem('ds_review_'+dk,JSON.stringify(r));
+  const stars=document.querySelectorAll('.star');
+  stars.forEach((s,i)=>s.classList.toggle('lit',i<v));
+}
+function saveReview(){
+  const dk=todayKey();
+  const r=JSON.parse(localStorage.getItem('ds_review_'+dk)||'{}');
+  r.note=document.getElementById('review-ta').value;
+  localStorage.setItem('ds_review_'+dk,JSON.stringify(r));
+  const btn=document.querySelector('.save-btn');
+  if(btn){btn.textContent='✓ Kaydedildi';setTimeout(()=>btn.textContent='💾 Kaydet',2000);}
+}
+
+// ======= THEME =======
+function toggleTheme(){
+  const isDark=document.body.classList.toggle('dark');
+  localStorage.setItem('ds_theme',isDark?'dark':'light');
+  document.getElementById('theme-btn').textContent=isDark?'☀️':'🌙';
+}
+function initTheme(){
+  const t=localStorage.getItem('ds_theme');
+  if(t==='dark'){document.body.classList.add('dark');document.getElementById('theme-btn').textContent='☀️';}
+}
+
+// ======= SHARE =======
+function shareApp(){
+  const url=window.location.href;
+  if(navigator.share){navigator.share({title:'DAILYSLAP',text:'Kendi programını kur! 🌍',url});}
+  else{navigator.clipboard.writeText(url).then(()=>{const el=document.getElementById('share-copied');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);});}
+}
+
+// ======= SPLASH =======
+function startApp(){
+  const name=document.getElementById('splash-name').value.trim();
+  const city=document.getElementById('splash-city').value.trim();
+  if(!name){document.getElementById('splash-name').style.borderColor='#ff4444';return;}
+  localStorage.setItem('ds_username',name);
+  if(city)localStorage.setItem('ds_city',city);
+  showApp(name);
+}
+function showApp(name){
+  const splash=document.getElementById('splash');
+  splash.classList.add('hide');
+  setTimeout(()=>splash.style.display='none',700);
+  updateUserDisplay(name);
+}
+function updateUserDisplay(name){
+  const el=document.getElementById('user-lakap');
+  if(el)el.textContent='👤 '+name;
+  document.title=name+' | DAILYSLAP';
+}
+function editName(){
+  const splash=document.getElementById('splash');
+  splash.style.display='flex';
+  setTimeout(()=>splash.classList.remove('hide'),10);
+  document.getElementById('splash-name').value=localStorage.getItem('ds_username')||'';
+  document.getElementById('splash-name').focus();
+}
+
+// ======= F1 =======
+const F1_2026=[
+  {r:1,gp:'Avustralya GP',loc:'Melbourne',date:'08 Mar',time:'07:00',flag:'🇦🇺'},
+  {r:2,gp:'Çin GP',loc:'Shanghai',date:'15 Mar',time:'10:00',flag:'🇨🇳'},
+  {r:3,gp:'Japonya GP',loc:'Suzuka',date:'29 Mar',time:'08:00',flag:'🇯🇵'},
+  {r:4,gp:'Bahreyn GP',loc:'Sahir',date:'12 Nis',time:'18:00',flag:'🇧🇭'},
+  {r:5,gp:'Suudi Arabistan GP',loc:'Cidde',date:'19 Nis',time:'20:00',flag:'🇸🇦'},
+  {r:6,gp:'Miami GP',loc:'Miami',date:'03 May',time:'23:00',flag:'🇺🇸'},
+  {r:7,gp:'Kanada GP',loc:'Montreal',date:'24 May',time:'23:00',flag:'🇨🇦'},
+  {r:8,gp:'Monako GP',loc:'Monako',date:'07 Haz',time:'16:00',flag:'🇲🇨'},
+  {r:9,gp:'İspanya GP',loc:'Barselona',date:'14 Haz',time:'16:00',flag:'🇪🇸'},
+  {r:10,gp:'Avusturya GP',loc:'Spielberg',date:'28 Haz',time:'16:00',flag:'🇦🇹'},
+  {r:11,gp:'Britanya GP',loc:'Silverstone',date:'05 Tem',time:'17:00',flag:'🇬🇧'},
+  {r:12,gp:'Belçika GP',loc:'Spa',date:'19 Tem',time:'16:00',flag:'🇧🇪'},
+  {r:13,gp:'Macaristan GP',loc:'Budapeşte',date:'26 Tem',time:'16:00',flag:'🇭🇺'},
+  {r:14,gp:'Hollanda GP',loc:'Zandvoort',date:'23 Ağu',time:'16:00',flag:'🇳🇱'},
+  {r:15,gp:'İtalya GP',loc:'Monza',date:'06 Eyl',time:'16:00',flag:'🇮🇹'},
+  {r:16,gp:'Madrid GP',loc:'Madrid',date:'13 Eyl',time:'16:00',flag:'🇪🇸'},
+  {r:17,gp:'Azerbaycan GP',loc:'Bakü',date:'26 Eyl',time:'14:00',flag:'🇦🇿'},
+  {r:18,gp:'Singapur GP',loc:'Singapur',date:'11 Eki',time:'15:00',flag:'🇸🇬'},
+  {r:19,gp:'Amerika GP',loc:'Austin',date:'25 Eki',time:'23:00',flag:'🇺🇸'},
+  {r:20,gp:'Meksika GP',loc:'Meksika City',date:'01 Kas',time:'23:00',flag:'🇲🇽'},
+  {r:21,gp:'Sao Paulo GP',loc:'São Paulo',date:'08 Kas',time:'20:00',flag:'🇧🇷'},
+  {r:22,gp:'Las Vegas GP',loc:'Las Vegas',date:'22 Kas',time:'07:00',flag:'🇺🇸'},
+  {r:23,gp:'Katar GP',loc:'Lusail',date:'29 Kas',time:'19:00',flag:'🇶🇦'},
+  {r:24,gp:'Abu Dhabi GP',loc:'Yas Marina',date:'06 Ara',time:'16:00',flag:'🇦🇪'},
+];
+const RACE_DATES=[
+  new Date('2026-03-08'),new Date('2026-03-15'),new Date('2026-03-29'),new Date('2026-04-12'),
+  new Date('2026-04-19'),new Date('2026-05-03'),new Date('2026-05-24'),new Date('2026-06-07'),
+  new Date('2026-06-14'),new Date('2026-06-28'),new Date('2026-07-05'),new Date('2026-07-19'),
+  new Date('2026-07-26'),new Date('2026-08-23'),new Date('2026-09-06'),new Date('2026-09-13'),
+  new Date('2026-09-26'),new Date('2026-10-11'),new Date('2026-10-25'),new Date('2026-11-01'),
+  new Date('2026-11-08'),new Date('2026-11-22'),new Date('2026-11-29'),new Date('2026-12-06'),
+];
+function renderF1(){
+  const el=document.getElementById('f1-list');if(!el)return;
+  const now=new Date();
+  let nextIdx=RACE_DATES.findIndex(d=>d>=now);
+  el.innerHTML=F1_2026.map((r,i)=>{
+    const isPast=RACE_DATES[i]<now;
+    const isNext=i===nextIdx;
+    return`<div class="f1-item ${isNext?'next-race':''} ${isPast?'past':''}">
+      <span class="f1-round">${r.r}</span>
+      <span class="f1-flag">${r.flag}</span>
+      <div class="f1-info">
+        <div class="f1-gp">${r.gp}</div>
+        <div class="f1-date">${r.date} ${r.time ? '• '+r.time : ''} • ${r.loc}</div>
+      </div>
+      ${isNext?'<span class="f1-sprint" style="background:rgba(212,175,55,0.12);color:var(--accent)">SONRAKI</span>':(r.sprint?'<span class="f1-sprint">Sprint</span>':'')}
+    </div>`;
+  }).join('');
+  if(nextIdx>=0)setTimeout(()=>document.querySelector('.next-race')?.scrollIntoView({behavior:'smooth',block:'center'}),300);
+}
+
+// ======= MAIN RENDER =======
+const HADISLER = [
+  "\"Din nasihattır/samimiyettir.\" Allah'a, Kitabına, Peygamberine, Müslümanların yöneticilerine ve bütün müslümanlara karşı samimi ol. (Müslim, İmân, 95)",
+  "\"İslâm, güzel ahlâktır.\" (Kenzü'l-Ummâl)",
+  "\"İnsanlara merhamet etmeyene Allah merhamet etmez.\" (Müslim, Fedâil, 66)",
+  "\"Kolaylaştırınız, güçleştirmeyiniz, müjdeleyiniz, nefret ettirmeyiniz.\" (Buhârî, İlm, 12)",
+  "\"Utanmadıktan sonra dilediğini yap!\" — Peygamberlerden öğrenegelen sözlerin en güzellerinden biridir. (Buhârî, Enbiyâ, 54)",
+  "\"Hayra vesile olan, hayrı yapan gibidir.\" (Tirmizî, İlm, 14)",
+  "\"Mümin bir delikten iki defa sokulmaz.\" Yani, gerçek mümin aynı yanılgıya iki kez düşmez. (Buhârî, Edeb, 83)",
+  "\"Nerede olursan ol Allah'a karşı gelmekten sakın; yaptığın kötülüğün arkasından bir iyilik yap ki bu onu yok etsin. İnsanlara karşı güzel ahlakın gereğine göre davran.\" (Tirmizî, Birr, 55)",
+  "\"Allah, sizden birinizin yaptığı işi sağlam ve iyi yapmasından hoşnut olur.\" (Taberânî, el-Mu'cemü'l-Evsat)",
+  "\"İman yetmiş küsur derecedir. En üstünü 'Lâ ilâhe illallah' sözü, en düşüğü rahatsız edici bir şeyi yoldan kaldırmaktır. Haya da imandandır.\" (Buhârî, Îmân, 3)",
+  "\"Kim kötü bir iş görürse onu eliyle düzeltsin; buna gücü yetmezse diliyle, buna da gücü yetmezse kalben karşı koysun. Bu da imanın en zayıf derecesidir.\" (Müslim, Îmân, 78)",
+  "\"İki göz vardır ki cehennem ateşi onlara dokunmaz: Allah korkusundan ağlayan göz ve gecesini Allah yolunda nöbet tutarak geçiren göz.\" (Tirmizî, Fedâilü'l-Cihâd, 12)",
+  "\"Zarar vermek ve zarara zararla karşılık vermek yoktur.\" (İbn Mâce, Ahkâm, 17)",
+  "\"Hiçbiriniz kendisi için istediğini mü'min kardeşi için istemedikçe gerçek iman etmiş olamaz.\" (Buhârî, Îmân, 7)",
+  "\"Müslüman müslümanın kardeşidir. Ona zulmetmez, onu teslim etmez. Kim kardeşinin bir ihtiyacını giderirse Allah da onun bir ihtiyacını giderir.\" (Buhârî, Mezâlim, 3)",
+  "\"İman etmedikçe cennete giremezsiniz, birbirinizi sevmedikçe de gerçek anlamda iman etmiş olamazsınız.\" (Müslim, Îmân, 93)",
+  "\"Müslüman, insanların elinden ve dilinden emin olduğu kimsedir.\" (Tirmizî, Îmân, 12)",
+  "\"Birbirinize buğuz etmeyin, haset etmeyin, arka çevirmeyin; ey Allah'ın kulları, kardeş olun.\" (Buhârî, Edeb, 57)",
+  "\"Doğruluk iyiliğe götürür, iyilik cennete götürür. Yalancılık kötüye götürür, kötülük cehenneme götürür.\" (Buhârî, Edeb, 69)",
+  "\"Kardeşinle münakaşa etme, onun hoşuna gitmeyecek şakalar yapma ve ona yerine getirmeyeceğin bir söz verme.\" (Tirmizî, Birr, 58)",
+  "\"Kardeşine tebessüm etmen sadakadır. İyiliği emredip kötülükten sakındırman sadakadır. Yolunu kaybedene yol göstermen sadakadır.\" (Tirmizî, Birr, 36)",
+  "\"Allah sizin dış görünüşünüze ve mallarınıza bakmaz; kalplerinize ve işlerinize bakar.\" (Müslim, Birr, 33)",
+  "\"Allah'ın rızası, anne ve babanın rızasındadır. Allah'ın öfkesi de anne babanın öfkesindedir.\" (Tirmizî, Birr, 3)",
+  "\"Üç dua şüphesiz kabul edilir: mazlumun duası, yolcunun duası ve babanın evladına duası.\" (İbn Mâce, Dua, 11)",
+  "\"Hiçbir baba, çocuğuna güzel terbiyeden daha üstün bir hediye veremez.\" (Tirmizî, Birr, 33)",
+  "\"Sizin en hayırlılarınız, hanımlarına karşı en iyi davrananlarınızdır.\" (Tirmizî, Radâ', 11)",
+  "\"Küçüklerimize merhamet etmeyen, büyüklerimize saygı göstermeyen bizden değildir.\" (Tirmizî, Birr, 15)",
+  "\"Bir yetimi görüp gözetmeyi üzerine alan kimse ile ben cennette işaret parmağı ve orta parmak gibi yan yanayız.\" (Buhârî, Edeb, 24)",
+  "\"(İnsanı) helâk eden yedi şeyden kaçının: Allah'a şirk, sihir, haksız yere adam öldürmek, faiz, yetim malı, savaştan kaçmak, namuslu mümin kadınlara iftira.\" (Buhârî, Vasâyâ, 23)",
+  "\"Allah'a ve ahiret gününe iman eden komşusuna eziyet etmesin, misafirine ikramda bulunsun, ya hayır söylesin veya sussun.\" (Buhârî, Edeb, 31)",
+  "\"Cebrâil bana komşu hakkında o kadar çok tavsiyede bulundu ki, komşuyu komşuya mirasçı kılacak zannettim.\" (Buhârî, Edeb, 28)",
+  "\"Dul ve fakirlere yardım eden kimse, Allah yolunda cihad eden ya da nafile oruç ve ibadet eden kimse gibidir.\" (Buhârî, Nafakât, 1)",
+  "\"Her insan hata eder. Hata işleyenlerin en hayırlıları tevbe edenlerdir.\" (Tirmizî, Kıyâme, 49)",
+  "\"Mü'minin her işi hayırdır: nimete kavuşursa şükreder, musibete uğrarsa sabreder. Her ikisi de onun için hayırdır.\" (Müslim, Zühd, 64)",
+  "\"Bizi aldatan bizden değildir.\" (Müslim, Îmân, 164)",
+  "\"Söz taşıyanlar cennete giremezler.\" (Müslim, Îmân, 168)",
+  "\"İşçiye ücretini, alnının teri kurumadan veriniz.\" (İbn Mâce, Ruhûn, 4)",
+  "\"Bir müslümanın diktiği ağaçtan veya ektiği ekinden insan, hayvan ve kuşların yedikleri, o müslüman için sadakadır.\" (Buhârî, Edeb, 27)",
+  "\"İnsanda bir organ vardır; sağlıklı olursa bütün vücut sağlıklı, bozulursa bütün vücut bozulur. Dikkat edin, o kalptir!\" (Buhârî, Îmân, 39)",
+  "\"Rabbinize karşı gelmekten sakının, beş vakit namazı kılın, orucunuzu tutun, zekâtınızı verin, yöneticilerinize itaat edin; Rabbinizin cennetine girin.\" (Tirmizî, Cum'a, 80)"
+];
+
+function renderHadis(){
+  const idx = new Date().getDate() % 40;
+  const num = idx + 1;
+  const el1 = document.getElementById('hadis-num');
+  const el2 = document.getElementById('hadis-text');
+  if(el1) el1.textContent = 'Günün Hadisi • #' + num;
+  if(el2) el2.textContent = HADISLER[idx];
+}
+
+function render(){
+  const now=new Date();
+  const nm=now.getHours()*60+now.getMinutes();
+  
+  // Clock
+  const h=String(now.getHours()).padStart(2,'0'),m=String(now.getMinutes()).padStart(2,'0'),s=String(now.getSeconds()).padStart(2,'0');
+  const el=n=>document.getElementById(n);
+  if(el('clock'))el('clock').textContent=`${h}:${m}:${s}`;
+  const days=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  const months=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  if(el('day-name'))el('day-name').textContent=days[now.getDay()];
+  if(el('date-str'))el('date-str').textContent=`${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  // Day reset at midnight
+  const dk=todayKey();
+  if(dk!==lastDK){
+    lastDK=dk;
+    completed.clear();saveComp();loadReview();
+    // Save yesterday completion to history
+    const yesterday=new Date(now);yesterday.setDate(now.getDate()-1);
+    const yk=yesterday.toISOString().split('T')[0];
+    const hist=JSON.parse(localStorage.getItem('ds_week_history')||'{}');
+    const pct=schedule.length>0?Math.round(completed.size/schedule.length*100):0;
+    hist[yk]=pct;
+    localStorage.setItem('ds_week_history',JSON.stringify(hist));
+    // Refresh prayer times
+    const t=getTodayPrayer();
+    NAMAZ_V=[{name:'İmsak',time:t.imsak,key:'imsak'},{name:'Sabah',time:t.sabah,key:'sabah'},{name:'Öğle',time:t.ogle,key:'ogle'},{name:'İkindi',time:t.ikindi,key:'ikindi'},{name:'Akşam',time:t.aksam,key:'aksam'},{name:'Yatsı',time:t.yatsi,key:'yatsi'}];
+  }
+
+  // Day progress (00:00 - 23:59)
+  const dayPct=Math.round(nm/(23*60+59)*100);
+  if(el('day-pct'))el('day-pct').textContent=dayPct+'%';
+  if(el('day-fill'))el('day-fill').style.width=dayPct+'%';
+
+  // Stats
+  if(el('comp-count'))el('comp-count').textContent=completed.size;
+  if(el('rem-count'))el('rem-count').textContent=schedule.length-completed.size;
+  const taskPct=schedule.length>0?Math.round(completed.size/schedule.length*100):0;
+  if(el('task-pct'))el('task-pct').textContent=taskPct+'%';
+  if(el('task-fill'))el('task-fill').style.width=taskPct+'%';
+  const namazComp=JSON.parse(localStorage.getItem('ds_namaz_comp')||'{}');
+  const nd=Object.keys(namazComp).filter(k=>k!=='_dk').filter(k=>namazComp[k]).length;
+  if(el('namaz-count'))el('namaz-count').textContent=nd+'/5';
+  const streak=updateStreak();
+  if(el('streak-count'))el('streak-count').textContent=streak.cur+'🔥';
+  if(el('streak-num'))el('streak-num').textContent=streak.cur;
+  if(el('streak-best'))el('streak-best').textContent='En iyi: '+streak.best;
+  // Show streak conditions
+  const nc2=JSON.parse(localStorage.getItem('ds_namaz_comp')||'{}');
+  const namazDone2=NAMAZ_V.filter(n=>!!nc2[n.key]).length;
+  const streakCond=document.getElementById('streak-cond');
+  if(streakCond){
+    const namazOK=namazDone2>=5;
+    const taskOK=completed.size>=5;
+    streakCond.innerHTML=`<span style="color:${namazOK?'var(--green)':'var(--muted)'}">🕌 ${namazDone2}/5</span> <span style="color:${taskOK?'var(--green)':'var(--muted)'}">✅ ${completed.size}/5</span>`;
+  }
+
+  // Namaz cards
+  if(el('namaz-cards')){
+    const allN=ALL_NAMAZ();
+    let nc=JSON.parse(localStorage.getItem('ds_namaz_comp')||'{}');
+    const ndk=todayKey();
+    if(nc._dk!==ndk){nc={_dk:ndk};localStorage.setItem('ds_namaz_comp',JSON.stringify(nc));}
+    el('namaz-cards').innerHTML=allN.map(n=>{
+      const vm=t2m(n.time),diff=vm-nm,isPast=diff<0;
+      const nxt=allN.find(x=>t2m(x.time)>nm);
+      const isNext=nxt?.key===n.key;
+      const isDone=!!nc[n.key];
+      const cls=isDone?'n-done':isNext?'next':'';
+      const cd=isDone?'checkmark':isPast?'Gecti':diff<60?diff+'dk':m2s(diff);
+      const cdDisplay=isDone?'<span style="color:var(--green);font-weight:700">✓</span>':(isPast?'Geçti':diff<60?diff+'dk':m2s(diff));
+      return`<div class="namaz-card ${cls}" onclick="toggleNamaz('${n.key}')" style="cursor:pointer${n.nafile?';border-style:dashed':''}">
+        <div class="n-name">${n.name}</div>
+        <div class="n-time">${n.time}</div>
+        <div class="n-cd">${cdDisplay}</div>
+      </div>`;
+    }).join('');
+    const doneCount=allN.filter(n=>!!nc[n.key]&&!n.nafile).length;
+    if(el('namaz-count'))el('namaz-count').textContent=doneCount+'/5';
+  }
+
+  // Current activity
+  let ci=-1;
+  const schedWithTime=schedule.filter(s=>s.time);
+  for(let j=0;j<schedWithTime.length;j++){if(t2m(schedWithTime[j].time)<=nm)ci=j;else break;}
+  if(ci>=0&&el('cur-name')){
+    const cur=schedWithTime[ci];
+    const nt=ci+1<schedWithTime.length?t2m(schedWithTime[ci+1].time):t2m('23:59');
+    el('cur-name').textContent=cur.name;
+    el('cur-left').textContent=`${m2s(nt-nm)} kaldı${cur.note?' • '+cur.note:''}`;
+    const btn=el('cur-btn'),isDone=completed.has(cur.id);
+    if(btn){btn.textContent=isDone?'✓ Tamamlandı':'✓ Tamamladım';isDone?btn.classList.add('done'):btn.classList.remove('done');}
+  }
+
+  // Schedule list
+  const schedEl=el('sched-list');
+  if(schedEl){
+    if(schedule.length===0){
+      schedEl.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:10px">📋</div><div style="font-family:'Syne',sans-serif;font-weight:800">Henüz aktivite yok</div><div style="font-size:0.8rem;margin-top:6px">+ Ekle butonuna bas</div></div>`;
+    } else {
+      const realCi=schedule.filter(s=>s.time).length>0?ci:-1;
+      schedEl.innerHTML=schedule.map((item,i)=>{
+        const im=t2m(item.time),isPast=item.time&&im<nm,isDone=completed.has(item.id);
+        const isCur=schedWithTime[ci]?.id===item.id;
+        let cls='sched-item';
+        if(isCur)cls+=' cur-row';if(isDone)cls+=' done-row';else if(isPast)cls+=' past-row';
+        return`<div class="${cls}">
+          <span class="item-time">${item.time||'—'}</span>
+          <div class="item-dot d-${item.cat}"></div>
+          <span class="item-name">${item.name}</span>
+          <span class="item-tag c-${item.cat}">${CAT_LBL[item.cat]||'—'}</span>
+          <div class="item-acts">
+            <button class="icon-btn" onclick="openModal(${item.id})">✏️</button>
+            <button class="icon-btn del" onclick="deleteItem(${item.id})">🗑️</button>
+            <button class="chk-btn ${isDone?'checked':''}" onclick="completeItem(${item.id})">${isDone?'✓':''}</button>
+          </div>
+        </div>`;
+      }).join('');
+      if(!render._s){render._s=true;setTimeout(()=>document.querySelector('.cur-row')?.scrollIntoView({behavior:'smooth',block:'center'}),400);}
+    }
+  }
+}
+
+
+// ======= WORKOUTS =======
+let workouts = JSON.parse(localStorage.getItem('ds_workouts')||'[]');
+let editingWorkoutId = null;
+let activeWorkoutDay = (new Date().getDay()+6)%7;
+const DAY_NAMES=['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+const DAY_SHORT=['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+
+function saveWorkoutsData(){localStorage.setItem('ds_workouts',JSON.stringify(workouts));}
+
+function openWorkoutModal(id){
+  id=id||null;
+  editingWorkoutId=id;
+  document.getElementById('workout-modal-title').textContent=id?'Egzersizi Düzenle':'Egzersiz Ekle';
+  if(id){
+    const w=workouts.find(x=>x.id===id);
+    if(w){document.getElementById('w-name').value=w.name;document.getElementById('w-day').value=w.day;document.getElementById('w-sets').value=w.sets||'';document.getElementById('w-reps').value=w.reps||'';document.getElementById('w-weight').value=w.weight||'';document.getElementById('w-note').value=w.note||'';}
+  } else {
+    document.getElementById('w-name').value='';document.getElementById('w-day').value=activeWorkoutDay;
+    document.getElementById('w-sets').value='';document.getElementById('w-reps').value='';
+    document.getElementById('w-weight').value='';document.getElementById('w-note').value='';
+  }
+  document.getElementById('workout-modal').classList.add('open');
+}
+function closeWorkoutModal(){document.getElementById('workout-modal').classList.remove('open');}
+function closeWorkoutModalOut(e){if(e.target===document.getElementById('workout-modal'))closeWorkoutModal();}
+function saveWorkout(){
+  const name=document.getElementById('w-name').value.trim();
+  if(!name)return;
+  const w={id:editingWorkoutId||Date.now(),name,day:parseInt(document.getElementById('w-day').value),sets:parseInt(document.getElementById('w-sets').value)||3,reps:parseInt(document.getElementById('w-reps').value)||10,weight:parseFloat(document.getElementById('w-weight').value)||0,note:document.getElementById('w-note').value.trim()};
+  if(editingWorkoutId){const idx=workouts.findIndex(x=>x.id===editingWorkoutId);if(idx>=0)workouts[idx]=w;}
+  else workouts.push(w);
+  saveWorkoutsData();closeWorkoutModal();renderWorkouts();
+}
+function deleteWorkout(id){workouts=workouts.filter(x=>x.id!==id);saveWorkoutsData();renderWorkouts();}
+function toggleWorkoutDone(id){
+  const today=new Date().toISOString().split('T')[0];
+  const key='ds_wdone_'+today;
+  const done=JSON.parse(localStorage.getItem(key)||'[]');
+  const idx=done.indexOf(id);
+  if(idx>=0)done.splice(idx,1);else done.push(id);
+  localStorage.setItem(key,JSON.stringify(done));
+  renderWorkouts();
+}
+function setWorkoutDay(day){activeWorkoutDay=day;renderWorkouts();}
+function renderWorkouts(){
+  const daysEl=document.getElementById('workout-days');
+  const listEl=document.getElementById('workout-list');
+  if(!daysEl||!listEl)return;
+  const today=new Date().toISOString().split('T')[0];
+  const todayDay=(new Date().getDay()+6)%7;
+  daysEl.innerHTML=DAY_SHORT.map((d,i)=>{
+    const count=workouts.filter(w=>w.day===i).length;
+    const isActive=i===activeWorkoutDay;
+    const isToday=i===todayDay;
+    return`<button onclick="setWorkoutDay(${i})" style="flex-shrink:0;padding:8px 12px;border-radius:10px;border:1px solid ${isActive?'var(--accent)':'var(--glass-border)'};background:${isActive?'rgba(212,175,55,0.15)':'var(--glass)'};color:${isActive?'var(--accent)':'var(--muted)'};font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;cursor:pointer">${d}${count>0?'<br><span style="font-size:0.6rem">'+count+'</span>':''}${isToday?'<br><span style="font-size:0.55rem;color:var(--accent2)">bugün</span>':''}</button>`;
+  }).join('');
+  const done=JSON.parse(localStorage.getItem('ds_wdone_'+today)||'[]');
+  const dayWorkouts=workouts.filter(w=>w.day===activeWorkoutDay);
+  if(dayWorkouts.length===0){
+    listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)"><div style="font-size:2rem;margin-bottom:8px">🏋️</div><div style="font-size:0.85rem">'+DAY_NAMES[activeWorkoutDay]+' için egzersiz yok</div></div>';
+  } else {
+    listEl.innerHTML=dayWorkouts.map(w=>{
+      const isDone=done.includes(w.id);
+      return`<div style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--glass-border)">
+        <button onclick="toggleWorkoutDone(${w.id})" style="width:28px;height:28px;border-radius:8px;flex-shrink:0;border:1.5px solid ${isDone?'var(--green)':'var(--glass-border)'};background:${isDone?'rgba(74,222,128,0.15)':'none'};cursor:pointer;color:var(--green);font-size:0.85rem">${isDone?'✓':''}</button>
+        <div style="flex:1;${isDone?'opacity:0.5':''}">
+          <div style="font-weight:700;font-size:0.88rem">${w.name}</div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:2px">${w.sets} set x ${w.reps} tekrar${w.weight>0?' - '+w.weight+'kg':''}${w.note?' - '+w.note:''}</div>
+        </div>
+        <button class="icon-btn" onclick="openWorkoutModal(${w.id})">✏️</button>
+        <button class="icon-btn del" onclick="deleteWorkout(${w.id})">🗑️</button>
+      </div>`;
+    }).join('');
+  }
+  const summaryEl=document.getElementById('workout-week-summary');
+  if(!summaryEl)return;
+  summaryEl.innerHTML=DAY_NAMES.map((d,i)=>{
+    const dayW=workouts.filter(w=>w.day===i);
+    if(dayW.length===0)return`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);opacity:0.4"><span style="font-size:0.82rem">${d}</span><span style="font-size:0.75rem;color:var(--muted)">Dinlenme</span></div>`;
+    const diff=i-todayDay;
+    const d2=new Date();d2.setDate(new Date().getDate()+diff);
+    const key=d2.toISOString().split('T')[0];
+    const doneDayList=JSON.parse(localStorage.getItem('ds_wdone_'+key)||'[]');
+    const doneCount=dayW.filter(w=>doneDayList.includes(w.id)).length;
+    const pct=Math.round(doneCount/dayW.length*100);
+    const isToday=i===todayDay;
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--glass-border);${isToday?'color:var(--accent)':''}">
+      <span style="font-size:0.82rem;font-weight:${isToday?700:400}">${d}${isToday?' (Bugün)':''}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:0.72rem;color:var(--muted)">${dayW.length} egzersiz</span>
+        <span style="font-size:0.75rem;font-weight:700;color:${pct===100?'var(--green)':'var(--muted)'}">${pct}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ======= INIT =======
+initTheme();
+loadReview();
+renderBooks();
+render();
+renderHadis();
+renderF1();
+setInterval(render,1000);
+
+const savedName=localStorage.getItem('ds_username');
+if(savedName){showApp(savedName);}
+else{setTimeout(()=>document.getElementById('splash-name').focus(),300);}
+document.getElementById('splash-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('splash-city').focus();});
+document.getElementById('splash-city').addEventListener('keydown',e=>{if(e.key==='Enter')startApp();});
+</script>
+</body>
+</html>
